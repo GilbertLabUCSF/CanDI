@@ -393,7 +393,7 @@ class Cancer(Entity):
             except AssertionError:
                 subset = [subset]
 
-        elif subset_type is "Organelle":
+        elif subset_type == "Organelle":
             subset = Organelle(subset).genes
 
         return mut_dat.loc[mut_dat.gene.isin(subset)]
