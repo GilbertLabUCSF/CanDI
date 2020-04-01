@@ -61,7 +61,7 @@ class SubsetHandler(object):
         return Cancer(cancer, subtype=subtype).depmap_ids
 
     @staticmethod
-    def get_organelle_genes(organelle):
+    def get_organelle_genes(organelle, conf=6):
 
         return Organelle(organelle, conf=conf).genes
 
@@ -101,12 +101,12 @@ class Entity(object):
     """
     def __init__(self, obj):
 
-        if obj is ("gene" or "org"):
+        if obj == ("gene" or "org"):
             self._axis = 0
         else:
             self._axis = 1
 
-        if obj is ("gene" or "line"):
+        if obj == ("gene" or "line"):
             bi_filt = pd.Series
         else:
             bi_filt = pd.DataFrame
@@ -387,7 +387,7 @@ class Cancer(Entity):
 
     def _get_mut_subset(self, mut_dat, subset, subset_type="Gene"):
 
-        if subset_type is "Gene":
+        if subset_type == "Gene":
             try:
                 assert isinstance(subset, MutableSequence) or isinstance(subset, np.ndarray)
             except AssertionError:
@@ -442,13 +442,13 @@ class CellLineCluster(Entity):
 
     def _get_mut_subset(self, mut_dat, subset, subset_type="Gene"):
 
-        if subset_type is "Gene":
+        if subset_type == "Gene":
             try:
                 assert isinstance(subset, MutableSequence)
             except AssertionError:
                 subset = [subset]
 
-        elif subset_type is "Organelle":
+        elif subset_type == "Organelle":
             subset = Organelle(subset).genes
 
         return mut_dat.loc[mut_dat.gene.isin(subset)]

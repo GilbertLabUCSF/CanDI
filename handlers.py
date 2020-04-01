@@ -234,8 +234,10 @@ class BinaryFilter:
     @staticmethod
     def _eval_args(vals=None, style="bool", threshold=1.0, return_lines=False):
         assert style in ["bool", "values"],"style must be 'bool' or 'values'"
+        """
         if return_lines:
             assert len(self._obj.shape) > 1, "return line is not available for type {}".format(self._obj)
+        """ 
         assert 0.0 < threshold <= 1.0, "threshold is invalid, must be between 0 and 1"
         assert vals is not None
         try:
