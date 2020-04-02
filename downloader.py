@@ -1,5 +1,7 @@
 import configparser
 import requests
+import time
+import csv
 
 class Downloader(object):
 
@@ -43,6 +45,24 @@ class Downloader(object):
             release_info = [i for i in self.response["releaseData"] if release in i["releaseName"]][0]
 
         return release_info["releaseName"]
+
+    def download(self, filename):
+
+        time.sleep(1)
+        url = self.download_info[filename]
+
+        print("Getting {}".format(filename))
+        response = requests.get(url)
+        text = response.content.decode("utf-8")
+
+        with open(filename, "w", encoding="utf-8") as f:
+
+            print("Writting {} to file".format(filename))
+            for line in text.split("\n"):
+                if line:
+                    f.write(line)
+
+            f.close()
 
 if __name__ == "__main__":
 
