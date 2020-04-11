@@ -7,6 +7,11 @@ import os
 
 class Manager(object):
 
+    """
+    The Manager class handles interations with the datasources
+    and the config file. It is used to setup of the config file upon installation.
+    All data downloading is done by Manager
+    """
 
     def __init__(self):
 
@@ -87,15 +92,16 @@ class Manager(object):
 
             f.close()
 
-    def write_config(self):
+    @staticmethod
+    def write_config(cfig_path, parser):
 
         print("Writing config file")
-        with open(self.cfig_path, "w") as f:
-            self.parser.write(f)
+        with open(cfig_path, "w") as f:
+            parser.write(f)
             f.close()
 
 if __name__ == "__main__":
 
     m = Manager()
     m.get_depmap_info()
-    m.write_config()
+    m.write_config(m.cfig_path, m.parser)
