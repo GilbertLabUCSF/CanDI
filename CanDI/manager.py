@@ -1,9 +1,10 @@
 import configparser
 import requests
 import time
+import io
 import csv
 import os
-
+import pandas as pd
 
 class Manager(object):
 
@@ -15,10 +16,12 @@ class Manager(object):
 
     def __init__(self):
 
-        cfig_path = os.path.dirname(os.path.realpath(__file__)) + "/data/config.ini"
+        manager_path = os.path.dirname(os.path.realpath(__file__))
+        cfig_path = manager_path + "/data/config.ini"
         parser = configparser.ConfigParser()
         parser.read(cfig_path)
 
+        self.manager_path = manager_path
         self.cfig_path = cfig_path
         self.parser = parser
 
@@ -74,23 +77,59 @@ class Manager(object):
 
         return candi_name
 
-    def from_depmap(self, filename):
+    def depmap_download(self, filename):
 
         time.sleep(1)
-        url = self.download_info[filename]
+        url = self.parser['depmap_urls'][filename]
 
-        print("Getting {}".format(filename))
+        print("Downloading {}".format(filename))
         response = requests.get(url)
-        text = response.content.decode("utf-8")
+        content = response.content.decode('utf-8')
 
-        with open(filename, "w", encoding="utf-8") as f:
+        print("Formatting {}".format(filename))
+        df = pd.read_csv(io.StringIO(content))
+        formatted = self.depmap_autoformat(df)
 
-            print("Writting {} to file".format(filename))
-            for line in text.split("\n"):
-                if line:
-                    f.write(line)
+        self.write_df(filename, "depmap",formatted)
 
+    def depmap_autoformat(self, df):
+
+        if "AAAS (8086)" in df.columns:
+
+            df.rename(columns = lambda s: s.split(" ")[0], inplace=True)
+            df = df.set_index("Unnamed:").T
+            df.reset_index(inplace=True)
+            df.rename(columns={"index":"Gene"}, inplace=True)
+
+        if "Protein_Change" in df.columns:
+            df.drop("Unnamed: 0", axis=1, inplace=True)
+
+        if "Hugo_Symbol" in df.columns:
+            df.rename(columns={"Hugo_Symbol": "Gene"}, inplace=True)
+
+        return df
+
+    def write_df(self, filename, path, df):
+
+        path = self.manager_path + self.parser["data_paths"][path]
+
+        try:
+            assert os.path.exists(path)
+        except AssertionError:
+            os.mkdir(path)
+
+        print("Writting {0}".format(path+filename))
+        df.to_csv(path+filename, index=False, sep=",")
+
+
+        """
+        with open(path+filename, "w", encoding="utf-8", newline='') as f:
+
+            print("Writting {0}".format(path+filename))
+            writer = csv.writer(f)
+            writer.writerows(text)
             f.close()
+        """
 
     @staticmethod
     def write_config(cfig_path, parser):
@@ -103,5 +142,5 @@ class Manager(object):
 if __name__ == "__main__":
 
     m = Manager()
-    m.get_depmap_info()
-    m.write_config(m.cfig_path, m.parser)
+    m.depmap_download("ccle_mutations.csv")
+
