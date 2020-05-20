@@ -1,10 +1,13 @@
 import configparser
 import requests
+import selenium
+import json
 import time
 import io
 import csv
 import os
 import pandas as pd
+from bs4 import BeautifulSoup
 
 class Manager(object):
 
@@ -25,9 +28,22 @@ class Manager(object):
         self.cfig_path = cfig_path
         self.parser = parser
 
+    def download_defaults(self):
+
+        default_sources = json.loads(self.parser.get("defaults","downloads"))
+
+        methods = {"depmap": self.depmap_download,
+                    "sanger": self.sanger_download}
+        for source in default_sources:
+            to_download = json.loads(self.parser.get("defaults", source))
+            for data in to_download: methods[source](data)
+
+    def sanger_download():
+        pass
+
     def get_depmap_info(self, release="latest"):
 
-        depmap = self.parser["download_apis"]["depmap"]
+        depmap = self.parser["download_urls"]["depmap"]
         print("Getting download information from DepMap")
         response = requests.get(depmap)
         assert response.status_code == 200
@@ -38,6 +54,20 @@ class Manager(object):
         self.download_info, self.depmap_files = self.parse_release()
         self.parser["depmap_urls"] = self.download_info
         self.parser["depmap_files"] = self.depmap_files
+
+
+
+    """def download_pickles(self):
+
+        pickles = self.parser["download_apis"]["pickles"]
+        r = requests.session()
+        res = r.get(pickles)
+        soup = BeautifulSoup(res.text)
+        print(soup.prettify())
+
+        for link in soup.find_all("a"):
+            print(link.get("href"))
+    """
 
     def parse_release(self):
 
@@ -77,17 +107,25 @@ class Manager(object):
 
         return candi_name
 
-    def depmap_download(self, filename):
+    def depmap_download(self, name, filename=False):
 
         time.sleep(1)
+
+        if filename:
+            filename = name
+        else:
+            filename = self.parser['depmap_files'][name]
+
         url = self.parser['depmap_urls'][filename]
 
         print("Downloading {}".format(filename))
         response = requests.get(url)
         content = response.content.decode('utf-8')
+        if "fusion" in filename:
+            df = pd.read_csv(io.StringIO(content), sep="\t")
+        else:
+            df = pd.read_csv(io.StringIO(content))
 
-        print("Formatting {}".format(filename))
-        df = pd.read_csv(io.StringIO(content))
         formatted = self.depmap_autoformat(df)
 
         self.write_df(filename, "depmap",formatted)
@@ -97,9 +135,13 @@ class Manager(object):
         if "AAAS (8086)" in df.columns:
 
             df.rename(columns = lambda s: s.split(" ")[0], inplace=True)
-            df = df.set_index("Unnamed:").T
+            if "Unnamed:" in df.columns:
+                df = df.set_index("Unnamed:").T
+            elif "DepMap_ID" in df.columns:
+                df = df.set_index("DepMap_ID").T
+
             df.reset_index(inplace=True)
-            df.rename(columns={"index":"Gene"}, inplace=True)
+            df.rename(columns={"index":"gene"}, inplace=True)
 
         if "Protein_Change" in df.columns:
             df.drop("Unnamed: 0", axis=1, inplace=True)
@@ -140,7 +182,7 @@ class Manager(object):
             f.close()
 
 if __name__ == "__main__":
-
     m = Manager()
-    m.depmap_download("ccle_mutations.csv")
-
+    m.get_depmap_info()
+    m.write_config(m.cfig_path, m.parser)
+    m.download_defaults()
