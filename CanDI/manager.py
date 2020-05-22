@@ -7,7 +7,6 @@ from time import sleep
 from pathlib import Path
 import contextlib
 from concurrent.futures import ThreadPoolExecutor
-from tqdm import tqdm
 import pandas as pd
 import requests
 
@@ -93,7 +92,6 @@ class Manager(object):
         entry = self.manage_request(name, "depmap")
         self.fetch_url(entry)
 
-
     def fetch_url(self, entry):
 
         filename, path, url = entry
@@ -101,26 +99,24 @@ class Manager(object):
         r = requests.get(url, stream=True)
         length = int(r.headers["content-length"])
         chunk_size = 1024
+        total = 0
 
+        print("Downloading {}...".format(filename))
         if r.status_code == 200:
 
             with open(path, "w") as f:
 
-               pool = tqdm(iterable=r.iter_content(chunk_size=chunk_size), total=length/chunk_size, unit="KB", ncols=200, ascii=True)
+               for chunk in r.iter_content(chunk_size=chunk_size):
 
-               for chunk in pool:
-
-                   desc = "Downloading {} ...".format(filename)
-                   to_add = (45 - len(desc)) * " "
-                   desc = desc + to_add
-                   pool.set_description(desc)
+                   total += chunk_size
                    chunk = chunk.decode("utf-8")
                    chunk = chunk.replace("\t", ",")
                    f.write(chunk)
-
+            print("Downloading {} complete!".format(filename))
             downloads = self.parser["downloads"]
 
             downloads[filename] = str(path)
+
 
     def parallel_fetch(self, entries):
         print("Starting Pool")
