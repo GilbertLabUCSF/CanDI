@@ -1,5 +1,5 @@
 name: candi
-dependencis:
+dependencies:
  - pandas
  - configparser
  - requests
