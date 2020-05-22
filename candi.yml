@@ -1,0 +1,5 @@
+name: o-builds
+channels:
+  - defaults
+prefix: /opt/anaconda3/envs/o-builds
+
