@@ -1,4 +1,5 @@
 pandas
 configparser
 requests
+tqdm
 
