@@ -6,7 +6,7 @@ import time
 from time import sleep
 from pathlib import Path
 import contextlib
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 from tqdm.contrib import DummyTqdmFile
 import pandas as pd
@@ -125,7 +125,7 @@ class Manager(object):
 
     def parallel_fetch(self, entries):
         print("Starting Pool")
-        with ProcessPoolExecutor(max_workers=4) as executor:
+        with ThreadPoolExecutor(max_workers=4) as executor:
             for i in entries:
                 executor.submit(self.fetch_url, i)
 
