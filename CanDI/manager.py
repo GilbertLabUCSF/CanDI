@@ -1,13 +1,16 @@
+import os
+import sys
 import configparser
-import requests
-import selenium
 import json
 import time
-import io
-import csv
-import os
+from time import sleep
+from pathlib import Path
+import contextlib
+from concurrent.futures import ProcessPoolExecutor
+from tqdm import tqdm
+from tqdm.contrib import DummyTqdmFile
 import pandas as pd
-from bs4 import BeautifulSoup
+import requests
 
 class Manager(object):
 
@@ -25,18 +28,9 @@ class Manager(object):
         parser.read(cfig_path)
 
         self.manager_path = manager_path
-        self.cfig_path = cfig_path
+        self.cfig_path = Path(cfig_path)
         self.parser = parser
 
-    def download_defaults(self):
-
-        default_sources = json.loads(self.parser.get("defaults","downloads"))
-
-        methods = {"depmap": self.depmap_download,
-                    "sanger": self.sanger_download}
-        for source in default_sources:
-            to_download = json.loads(self.parser.get("defaults", source))
-            for data in to_download: methods[source](data)
 
     def sanger_download():
         pass
@@ -55,19 +49,6 @@ class Manager(object):
         self.parser["depmap_urls"] = self.download_info
         self.parser["depmap_files"] = self.depmap_files
 
-
-
-    """def download_pickles(self):
-
-        pickles = self.parser["download_apis"]["pickles"]
-        r = requests.session()
-        res = r.get(pickles)
-        soup = BeautifulSoup(res.text)
-        print(soup.prettify())
-
-        for link in soup.find_all("a"):
-            print(link.get("href"))
-    """
 
     def parse_release(self):
 
@@ -110,6 +91,55 @@ class Manager(object):
     def depmap_download(self, name, filename=False):
 
         time.sleep(1)
+        entry = self.manage_request(name, "depmap")
+        self.fetch_url(entry)
+
+
+    def fetch_url(self, entry):
+
+        filename, path, url = entry
+
+        r = requests.get(url, stream=True)
+        length = int(r.headers["content-length"])
+        chunk_size = 1024
+
+        if r.status_code == 200:
+
+            with open(path, "w") as f:
+
+               pool = tqdm(iterable=r.iter_content(chunk_size=chunk_size), total=length/chunk_size, unit="KB", ncols=200, ascii=True)
+
+               for chunk in pool:
+
+                   desc = "Downloading {} ...".format(filename)
+                   to_add = (45 - len(desc)) * " "
+                   desc = desc + to_add
+                   pool.set_description(desc)
+                   chunk = chunk.decode("utf-8")
+                   chunk = chunk.replace("\t", ",")
+                   f.write(chunk)
+
+            downloads = self.parser["downloads"]
+
+            downloads[filename] = str(path)
+
+    def parallel_fetch(self, entries):
+        print("Starting Pool")
+        with ProcessPoolExecutor(max_workers=4) as executor:
+            for i in entries:
+                executor.submit(self.fetch_url, i)
+
+
+    def download_defaults(self):
+
+        default_sources = json.loads(self.parser.get("defaults","downloads"))
+        to_download =  json.loads(self.parser.get("defaults", default_sources[0])) 
+
+        entries = [self.manage_request(i, "depmap") for i in to_download]
+        self.parallel_fetch(entries)
+
+
+    def manage_request(self, name, path, filename=False):
 
         if filename:
             filename = name
@@ -118,60 +148,82 @@ class Manager(object):
 
         url = self.parser['depmap_urls'][filename]
 
-        print("Downloading {}".format(filename))
-        response = requests.get(url)
-        content = response.content.decode('utf-8')
-        if "fusion" in filename:
-            df = pd.read_csv(io.StringIO(content), sep="\t")
-        else:
-            df = pd.read_csv(io.StringIO(content))
+        base_path = Path(self.manager_path) / self.parser["data_paths"][path]
 
-        formatted = self.depmap_autoformat(df)
+        try:
+            assert os.path.exists(base_path)
+        except AssertionError:
+            os.mkdir(base_path)
 
-        self.write_df(filename, "depmap",formatted)
+        write_path = base_path / filename
 
-    def depmap_autoformat(self, df):
+        return (filename, write_path, url)
+
+    def depmap_autoformat(self):
+
+        try:
+            downloaded = self.parser["downloads"] 
+        except KeyError:
+            raise(RuntimeError, "There are not data files to format. Please download data and try again or run install.py")
+
+        for k,v in downloaded.items():
+            try:
+                if k not in self.parser["formatted"]:
+                    print("Formatting {}".format(k))
+                    df = pd.read_csv(v, low_memory=False, memory_map=True)
+                    self.format_depmap_data(df, v)
+            except KeyError:
+                print("Formatting {}".format(k))
+                df = pd.read_csv(v, low_memory=False, memory_map=True)
+                self.format_depmap_data(df, v)
+
+    def format_depmap_data(self, df, path):
 
         if "AAAS (8086)" in df.columns:
 
             df.rename(columns = lambda s: s.split(" ")[0], inplace=True)
-            if "Unnamed:" in df.columns:
-                df = df.set_index("Unnamed:").T
-            elif "DepMap_ID" in df.columns:
-                df = df.set_index("DepMap_ID").T
 
+            if "Unnamed:" in df.columns:
+                df.rename(columns={"Unnamed:":"DepMap_ID"}, inplace=True)
+
+            df = df.set_index("DepMap_ID").T
             df.reset_index(inplace=True)
             df.rename(columns={"index":"gene"}, inplace=True)
+            df.set_index("gene", inplace=True)
+            df.to_csv(path)
 
         if "Protein_Change" in df.columns:
-            df.drop("Unnamed: 0", axis=1, inplace=True)
+
+            try:
+                df.drop("Unnamed: 0", axis=1, inplace=True)
+                df.to_csv(path, index=False)
+            except KeyError:
+                pass
 
         if "Hugo_Symbol" in df.columns:
-            df.rename(columns={"Hugo_Symbol": "Gene"}, inplace=True)
+            try:
+                df.rename(columns={"Hugo_Symbol": "gene"}, inplace=True)
+                df.to_csv(path, index=False)
+            except KeyError:
+                pass
 
-        return df
+        if "LeftGene" in df.columns:
+           for col in df.columns:
+               if "Gene" in col:
+                   split_cols = df[col].str.split(" ", expand=True)
+                   df[col] = split_cols[0]
+                   df[col[:-4] + "EnsemblID"] = split_cols[1].str.replace("(", "").str.replace(")", "")
 
-    def write_df(self, filename, path, df):
-
-        path = self.manager_path + self.parser["data_paths"][path]
+           df.to_csv(path, index=False)
 
         try:
-            assert os.path.exists(path)
-        except AssertionError:
-            os.mkdir(path)
+            formatted = self.parser["formatted"]
+        except KeyError:
+            self.parser["formatted"] = {}
+            formatted = self.parser["formatted"]
 
-        print("Writting {0}".format(path+filename))
-        df.to_csv(path+filename, index=False, sep=",")
+        formatted[path.split("/")[-1]] = path
 
-
-        """
-        with open(path+filename, "w", encoding="utf-8", newline='') as f:
-
-            print("Writting {0}".format(path+filename))
-            writer = csv.writer(f)
-            writer.writerows(text)
-            f.close()
-        """
 
     @staticmethod
     def write_config(cfig_path, parser):
@@ -183,6 +235,6 @@ class Manager(object):
 
 if __name__ == "__main__":
     m = Manager()
-    m.get_depmap_info()
+    #m.depmap_download("fusions")
+    m.depmap_autoformat()
     m.write_config(m.cfig_path, m.parser)
-    m.download_defaults()

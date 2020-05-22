@@ -4,7 +4,7 @@ from collections import OrderedDict, MutableSequence
 import itertools as it
 import pandas as pd
 import numpy as np
-from CanDI import data, handlers #transcription#, transcription
+from CanDI import data, handlers
 
 
 class SubsetHandler(object):
@@ -21,10 +21,8 @@ class SubsetHandler(object):
         if arg is None:
             return dat
         else:
-            
             if isinstance(arg, np.ndarray): 
                 arg = list(arg)
-                
             cases = {str: self.handle_string,
                     tuple: self.handle_tuple,
                     list: self.get_many}
@@ -111,7 +109,7 @@ class Entity(object):
         else:
             bi_filt = pd.DataFrame
 
-        self._essentiality_filter = handlers.BinaryFilter(5.0, bi_filt)
+        #self._essentiality_filter = handlers.BinaryFilter(5.0, bi_filt)
         self._expression_filter = handlers.BinaryFilter(1.0, bi_filt)
         self._copy_number_del = handlers.BinaryFilter(0.92, bi_filt)
         self._copy_number_dup = handlers.BinaryFilter(1.07, bi_filt)
@@ -126,39 +124,39 @@ class Entity(object):
         setattr(self, attr, values)
         return values
 
-    def transcribed(self, item=None, style='bool', threshold=1.0, return_lines=False):
-        values = self._subset_handler(item, self.transcription)
+    def expressed(self, item=None, style='bool', threshold=1.0, return_lines=False):
+        values = self._subset_handler(item, self.expression)
         return self._expression_filter(values, style, "over", threshold, return_lines)
 
-    def untranscribed(self, item=None, style='bool', threshold=1.0, return_lines=False):
-        values = self._subset_handler(item, self.transcription)
+    def unexpressed(self, item=None, style='bool', threshold=1.0, return_lines=False):
+        values = self._subset_handler(item, self.expression)
         return self._expression_filter(values, style, "under", threshold, return_lines)
 
-    def transcription_of(self, items):
-        return self._subset_handler(items, self.transcription)
-        #return self.transcription.reindex(genes, axis=axis)
+    def expression_of(self, items):
+        return self._subset_handler(items, self.expression)
+        #return self.expression.reindex(genes, axis=axis)
 
-    def essentiality_of(self, items):
-        return self._subset_handler(items, self.pickles)
+    #def essentiality_of(self, items):
+    #    return self._subset_handler(items, self.pickles)
 
-    def essential(self, item=None, style='bool', threshold=1.0, return_lines=False):#self, item=None, style='bool'):
-        values = self._subset_handler(item, self.pickles)
-        return self._essentiality_filter(values, style, "over", threshold, return_lines)
+    #def essential(self, item=None, style='bool', threshold=1.0, return_lines=False):#self, item=None, style='bool'):
+    #    values = self._subset_handler(item, self.pickles)
+    #    return self._essentiality_filter(values, style, "over", threshold, return_lines)
 
-    def non_essential(self, item=None, style='bool', threshold=1.0, return_lines=False):
-        values = self._subset_handler(item, self.pickles)
-        return self._essentiality_filter(values, style, "under", threshold, return_lines)
+    #def non_essential(self, item=None, style='bool', threshold=1.0, return_lines=False):
+    #    values = self._subset_handler(item, self.pickles)
+    #    return self._essentiality_filter(values, style, "under", threshold, return_lines)
 
     def duplication(self, item=None, style='bool', threshold=1.0, return_lines=False):
-        values = self._subset_handler(item, self.copy_number)
+        values = self._subset_handler(item, self.gene_cn)
         return self._copy_number_dup(values, style, "over", threshold, return_lines)
 
     def deletion(self, item=None, style='bool', threshold=1.0, return_lines=False):
-        values = self._subset_handler(item, self.copy_number)
+        values = self._subset_handler(item, self.gene_cn)
         return self._copy_number_del(values, style, "under", threshold, return_lines)
 
     def cn_normal(self, item=None, style='bool', threshold=1.0, return_lines=False):
-        values = self._subset_handler(item, self.copy_number)
+        values = self._subset_handler(item, self.gene_cn)
         under =  self._copy_number_dup(values, "values", "under", threshold, return_lines)
         over = self._copy_number_del(under, style, "over", threshold, return_lines)
         return over
@@ -186,11 +184,6 @@ class Entity(object):
 #
 #        return normed_df
 #
-#    def _cn_norm(self, array):
-#        pass
-
-
-
 
 #################################################################################################################################
 
@@ -298,7 +291,7 @@ class CellLine(Entity):
         try:
             info = data.cell_lines.loc[cellline]
         except KeyError:
-            info = data.cell_lines.loc[data.cell_lines.name == cellline].iloc[0]
+            info = data.cell_lines.loc[data.cell_lines.stripped_cell_line_name == cellline].iloc[0]
         except KeyError:
             info = data.cell_lines.loc[data.cell_lines.CCLE_Name == cellline].iloc[0]
         except IndexError:
@@ -306,15 +299,15 @@ class CellLine(Entity):
 
         self.depmap_id = info.name
         self.ccle_name = info.CCLE_Name
-        self.name = info["name"]
-        self.tissue = info.tissue
-        self.aliases = info.Aliases
-        self.cosmic_id = info.COSMIC_ID
-        self.sanger_id = info["Sanger ID"]
-        self.gender = info.Gender
-        self.source = info.Source
-        self.disease = info["Primary Disease"]
-        self.subtype = info["Subtype Disease"]
+        self.name = info["stripped_cell_line_name"]
+        self.tissue = info.lineage
+        self.aliases = info.Alias
+        self.cosmic_id = info.COSMICID
+        self.sanger_id = info["Sanger_Model_ID"]
+        self.sex = info.sex
+        self.source = info.source
+        self.lineage = info["lineage"]
+        self.subtype = info["lineage_subtype"]
         self._grabber = handlers.Grabber("line", self.depmap_id, self._axis)
 
     @property
@@ -347,24 +340,24 @@ class Cancer(Entity):
         super().__init__("canc")
 
         if subtype is None and all_except is False:
-            info = data.cell_lines.loc[data.cell_lines["Primary Disease"].isin([disease])]
+            info = data.cell_lines.loc[data.cell_lines["lineage"].isin([disease])]
         elif subtype is None and all_except is True:
-            info = data.cell_lines.loc[~data.cell_lines["Primary Disease"].isin([disease])]
+            info = data.cell_lines.loc[~data.cell_lines["lineage"].isin([disease])]
             disease = "All Except {}".format(disease)
         else:
-            info = data.cell_lines[data.cell_lines["Subtype Disease"].str.contains(subtype, regex=False)]
+            info = data.cell_lines[data.cell_lines["lineage_subtype"].str.contains(subtype, regex=False)]
         if gender:
-            info = info.loc[info.Gender == gender]
+            info = info.loc[info.sex == gender]
         if source:
-            info = info.loc[info.Source == source]
+            info = info.loc[info.source == source]
 
         self.disease = disease
         self.depmap_ids = list(info.index)
-        self.names = list(info.name)
+        self.names = list(info.stripped_cell_line_name)
         self.ccle_names = list(info.CCLE_Name)
-        self.subtypes = info["Subtype Disease"].unique()
-        self.genders = info.Gender.unique()
-        self.sources = info.Source.unique()
+        self.subtypes = info["lineage"].unique()
+        self.sexes = info.sex.unique()
+        self.sources = info.source.unique()
         self._info = info
         self._string_meth = lambda x,y: x.loc[y]
         self._grabber = handlers.Grabber("canc", self.depmap_ids, self._axis)
@@ -417,9 +410,9 @@ class CellLineCluster(Entity):
         else:
             info = data.cell_lines[~lines]
 
-        self.disease = info["Primary Disease"].unique()
-        self.subtypes = info["Subtype Disease"].unique()
-        self.names = list(info.name)
+        self.disease = info["lineage"].unique()
+        self.subtypes = info["lineage_subtype"].unique()
+        self.names = list(info.stripped_cell_line_name)
         self.ccle_names = list(info.CCLE_Name)
         self.depmap_ids = list(info.index)
         self.genders = info.Gender.unique()

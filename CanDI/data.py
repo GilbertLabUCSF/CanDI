@@ -2,7 +2,9 @@
 import os
 import gc
 import operator
+import json
 import configparser
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import sys
@@ -15,96 +17,101 @@ class Data(object):
 #can call Data.load() to load any specific dataset
     def __init__(self):
 
-        file_path = os.path.dirname(os.path.abspath(__file__))
-        config_path = file_path + '/data/config.ini'
+        self._file_path = Path(os.path.dirname(os.path.realpath(__file__)))
+        config_path = self._file_path / 'data/config.ini'
+
         parser = configparser.ConfigParser()
         parser.read(config_path)
+
         self._parser = parser
-        #Path used for loading data
-        data_path = file_path + parser["paths"]["datasource"]
-        self.data_path = data_path
-        #Assign File names to variables
-        files = parser['files']
-        info = parser["info"]
+        self._verify_install()
+        self._init_sources()
+        self._init_depmap_paths()
+        self._init_index_tables()
 
-        #set attributes to files paths that are accesibile by data
-        self.transcription = data_path + files["transcription"]
-        self.counts = data_path + files["counts"]
-        self.pickles = data_path + files["pickles"]
-        self.complexes = data_path + files["complexes"]
-        self.copy_number = data_path + files["copy_number"]
-        self.mutations = data_path + files["mutations"]
-        self.depmap = data_path + files["depmap"]
-        self.fusions = data_path + files["fusions"]
-        self.translocations = data_path + files["translocations"]
-        self.interactions = data_path + files["protein_interactions"]
-        self.methylation_p = data_path + files["methylation_p"]
-        self.methylation_1kb = data_path +files["methylation_1kb"]
+    def _verify_install(self):
+        try:
+            assert "depmap_urls" in self._parser.sections()
+        except AssertionError:
+            raise(RuntimeError, "CanDI has not been properly installed. Please run CanDI/install.py prior to import")
 
-        #Data will always load genes and cell line info because they're required to instantiate gene_query classes
-        self.genes = pd.read_csv(data_path+info["genes"],
-                                 memory_map=True,
-                                 low_memory=False,
-                                 dtype={"ENTREZ ID":str},
-                                 index_col = "Approved symbol")
-        self.cell_lines = pd.read_csv(data_path+info["cell_lines"],
-                                      memory_map=True,
-                                      low_memory=False,
-                                      index_col="DepMap_ID")
-        self.locations = pd.read_csv(data_path+files["locations"], memory_map=True, low_memory=True)
+    def _init_sources(self):
 
-#        self._datasets = {"pickles":Pickles,
-#                          "transcription":Transcription,
-#                          "copy_number":CopyNumber,
-#                          "depmap":"DepMap",
-#                          "mutations":Mutations,
-#                          "fusions":Fusions,
-#                          "Translocations":Translocations,
-#                          "interactions":Interactions,
-#                          "complexes":Complexes,
-#                          "methylation_p": "MethP",
-#                          "methylation_1kb":"MethKb"}
+        sources = []
 
-        if bool(parser['behavior']['autoload']) == True:
-            to_load = parser['behavior']['to_load']
+        for option in self._parser["data_paths"]:
+            sources.append(option)
+            setattr(self, "_" + option + "_path", self._file_path / self._parser["data_paths"][option])
 
-            if type(to_load) == str:
-                to_load = [to_load]
+        self.sources = sources
 
-            for i in to_load:
-                try:
-                    setattr(self,
-                            i, pd.read_csv(getattr(self, i),
-                                                            memory_map=True,
-                                                            low_memory=False,
-                                                            index_col=self._parser['index'][i]))
-                except KeyError:
-                    setattr(self,
-                            i,
-                            (pd.read_csv(getattr(self, i),
-                                                          memory_map=True,
-                                                                          low_memory=False)))
-                except AttributeError:
-                    raise RuntimeError("This package is not compatible with python2. Make sure you're using a Python3 interpreter")
+    def _init_depmap_paths(self):
+        self.depmap_files = self._parser["depmap_files"]
+
+        for option in self._parser["depmap_files"]:
+            try:
+                new_path = self._depmap_path / self._parser.get("depmap_files", option)
+                assert os.path.exists(new_path)
+                setattr(self, option, new_path)
+            except AssertionError:
+                setattr(self, option, None)
+
+    def _init_index_tables(self):
+
+        for option in self._parser["autoload_info"]:
+            try:
+               new_path = self._file_path / self._parser.get("autoload_info", option)
+               assert os.path.exists(new_path)
+               setattr(self, option, self._handle_autoload(option, new_path))
+            except AssertionError:
+               raise(RuntimeError, "You are missing essential index table: {}. exiting...".format(new_path))
+
+
+    @staticmethod
+    def _handle_autoload(method, path):
+
+        if method == "genes":
+
+            df = pd.read_csv(path,
+                             memory_map=True,
+                             low_memory=False,
+                             dtype={"ENTREZ ID":str},
+                             index_col = "Approved symbol")
+
+        elif method == "cell_lines":
+
+            df = pd.read_csv(path,
+                             memory_map=True,
+                             low_memory=False,
+                             index_col="DepMap_ID")
+
+        elif method == "locations":
+            df = pd.read_csv(path,
+                             memory_map=True,
+                             low_memory=True)
+
+        return df
+
 
     def load(self, key):
         if hasattr(self, key):
+
+            new_path = getattr(self, key)
             try:
-                setattr(self,
-                        key,
-                        pd.read_csv(getattr(self, key),
-                                    memory_map=True,
-                                    low_memory=False,
-                                    index_col=self._parser['index'][key]))
-            except KeyError:
-                setattr(self,
-                        key,
-                        pd.read_csv(getattr(self, key),
-                                                       memory_map=True,
-                                                       low_memory=False))
+                index = self._parser.get("index", key)
+
+            except configparser.NoOptionError:
+                index = None
+
             except AttributeError:
                 raise RuntimeError("This package is not compatible with python2. Make sure you're using a Python3 interpreter")
 
+            df = pd.read_csv(new_path,
+                             memory_map = True,
+                             low_memory = False,
+                             index_col = index)
+
+            setattr(self, key, df)
             return getattr(self, key)
 
         else:

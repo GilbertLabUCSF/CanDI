@@ -1,7 +1,9 @@
 import operator
 import pandas as pd
 import numpy as np
-from collections import MutableSequence
+from pathlib import Path
+import collections
+import six
 from CanDI import data
 
 
@@ -23,9 +25,11 @@ class Grabber:
         if item not in dir(data):
             raise AttributeError("data has no attribute {}".format(item))
 
+
         dataset = getattr(data, item)
 
-        if type(dataset) is str:
+        if isinstance(dataset, Path):
+
 
             to_load = input("{} has not been loaded. Do you want to load, y/n?> ".format(item))
             if to_load == ("y" or "Y" or "Yes"):
@@ -45,56 +49,58 @@ class Grabber:
     @property
     def gene(self):
 
-        return {"pickles": self.get_one,
-                "depmap": self.get_one,
-                "transcription": self.get_one,
-                "counts": self.get_one,
-                "copy_number": self.get_one,
-                "complexes": self.get_one,
+        return {#"pickles": self.get_one,
+                "gene_effect": self.get_one,
+                "expression": self.get_one,
+                #"counts": self.get_one,
+                "gene_cn": self.get_one,
+                #"complexes": self.get_one,
                 "locations": self.isin,
                 "mutations": self.isin,
-                "fusions": self.merge_two,
-                "translocations": self.merge_two,
-                "interactions": self.merge_two}
+                "fusions": self.merge_two
+                }
+                #"translocations": self.merge_two,
+                #"interactions": self.merge_two}
     @property
     def line(self):
 
-        return {"pickles": self.get_one,
-                "depmap": self.get_one,
-                "transcription": self.get_one,
-                "counts": self.get_one,
-                "copy_number": self.get_one,
+        return {#"pickles": self.get_one,
+                "gene_effect": self.get_one,
+                "expression": self.get_one,
+                #"counts": self.get_one,
+                "gene_cn": self.get_one,
                 "mutations": self.isin,
-                "fusions": self.merge_two,
-                "translocations": self.isin}
+                "fusions": self.merge_two
+                #"translocations": self.isin}
+            }
 
 
     @property
     def canc(self):
 
-        return {"pickles": self.get_several,
-                "depmap": self.get_several,
-                "transcription": self.get_several,
-                "copy_number": self.get_several,
+        return {#"pickles": self.get_several,
+                "gene_effect": self.get_several,
+                "expression": self.get_several,
+                "gene_cn": self.get_several,
                 "mutations": self.isin,
-                "fusions": self.isin,
-                "translocations": self.isin,
-                "counts": self.get_several}
+                "fusions": self.isin}
+                #"translocations": self.isin,
+                #"counts": self.get_several}
 
 
     @property
     def org(self):
 
-        return {"pickles": self.get_several,
-                "depmap": self.get_several,
-                "transcription": self.get_several,
-                "copy_number": self.get_several,
-                "complexes": self.get_several,
-                "counts": self.get_several,
+        return {#"pickles": self.get_several,
+                "gene_effect": self.get_several,
+                "expression": self.get_several,
+                "gene_cn": self.get_several,
+                #"complexes": self.get_several,
+                #"counts": self.get_several,
                 "mutations": self.isin,
-                "fusions": self.merge_two,
-                "translocations": self.merge_two,
-                "interactions": self.merge_two}
+                "fusions": self.merge_two}
+                #"translocations": self.merge_two,
+                #"interactions": self.merge_two}
 
     def get_one(self, dataset):
 
@@ -252,10 +258,6 @@ class BinaryFilter:
 
 
 
-
-
-
-
 class MutationHandler(object):
 
     """
@@ -296,7 +298,7 @@ class MutationHandler(object):
         assert item in mut_dat[variant].unique(), "{0} not found, options are: {1}".format(item, mut_dat[variant].unique())
 
 
-        if isinstance(item, MutableSequence):
+        if isinstance(item, collections.Iterable) and not isinstance(item, six.string_types):
             method = lambda x,y: mut_dat.loc[mut_dat[x].isin(y)]
 
         else:
