@@ -8,7 +8,6 @@ from pathlib import Path
 import contextlib
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
-from tqdm.contrib import DummyTqdmFile
 import pandas as pd
 import requests
 
