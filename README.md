@@ -1,2 +1,3 @@
 # Candi
 
+## Installation
