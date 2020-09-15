@@ -340,12 +340,12 @@ class Cancer(Entity):
         super().__init__("canc")
 
         if subtype is None and all_except is False:
-            info = data.cell_lines.loc[data.cell_lines["lineage"].isin([disease])]
+            info = data.cell_lines.loc[data.cell_lines["primary_disease"].isin([disease])]
         elif subtype is None and all_except is True:
-            info = data.cell_lines.loc[~data.cell_lines["lineage"].isin([disease])]
+            info = data.cell_lines.loc[~data.cell_lines["primary_disease"].isin([disease])]
             disease = "All Except {}".format(disease)
         else:
-            info = data.cell_lines[data.cell_lines["lineage_subtype"].str.contains(subtype, regex=False)]
+            info = data.cell_lines[data.cell_lines["disease_subtype"].str.contains(subtype, regex=False)]
         if gender:
             info = info.loc[info.sex == gender]
         if source:

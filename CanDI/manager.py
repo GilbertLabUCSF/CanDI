@@ -81,7 +81,7 @@ class Manager(object):
             candi_name = candi_name[len("Achilles_"):]
         elif "CCLE_" in candi_name:
             candi_name = candi_name[len("CCLE_"):]
-        elif 'v2' in candi_name:
+        if 'v2' in candi_name:
             candi_name = candi_name[:-len("_v2")]
 
         return candi_name
