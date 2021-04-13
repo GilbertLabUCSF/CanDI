@@ -15,13 +15,12 @@ class SubsetHandler(object):
     Automates finding what type of argument the user provided.
     """
 
-
     def __call__(self, arg, dat):
 
         if arg is None:
             return dat
         else:
-            if isinstance(arg, np.ndarray): 
+            if isinstance(arg, np.ndarray):
                 arg = list(arg)
             cases = {str: self.handle_string,
                     tuple: self.handle_tuple,
@@ -87,16 +86,17 @@ class SubsetHandler(object):
             return vals
 
 
-
+#########################################################################################################################################
 
 
 class Entity(object):
 
     """
-    Entity is the parent class for all oncodpedia classes.
+    Entity is the parent class for all CanDI classes.
     It's purpose is to provide a universal connection to the data for it's child classes.
     It's methods are idiomatic functions for the various handlers that apply manipulations to the datasets.
     """
+
     def __init__(self, obj):
 
         if obj == ("gene" or "org"):
@@ -109,6 +109,7 @@ class Entity(object):
         else:
             bi_filt = pd.DataFrame
 
+        """Entity functions rely on the following data handlers."""
         #self._essentiality_filter = handlers.BinaryFilter(5.0, bi_filt)
         self._expression_filter = handlers.BinaryFilter(1.0, bi_filt)
         self._copy_number_del = handlers.BinaryFilter(0.92, bi_filt)
@@ -124,15 +125,23 @@ class Entity(object):
         setattr(self, attr, values)
         return values
 
+    """The following functions handle most common biologically relevant queries of candi objects.
+        They automatically call the filtering objects that are defined during instantiation."""
+
     def expressed(self, item=None, style='bool', threshold=1.0, return_lines=False):
+        """Returns genes/celllines that are above a certain expression filter."""
+
         values = self._subset_handler(item, self.expression)
         return self._expression_filter(values, style, "over", threshold, return_lines)
 
     def unexpressed(self, item=None, style='bool', threshold=1.0, return_lines=False):
+        """Unexpressed function returns genes/cellline(s) that are below a certain expression filter."""
+
         values = self._subset_handler(item, self.expression)
         return self._expression_filter(values, style, "under", threshold, return_lines)
 
     def expression_of(self, items):
+        """Expression of returns the transcription of a specific gene(s)/cellline(s)."""
         return self._subset_handler(items, self.expression)
         #return self.expression.reindex(genes, axis=axis)
 
@@ -148,20 +157,27 @@ class Entity(object):
     #    return self._essentiality_filter(values, style, "under", threshold, return_lines)
 
     def duplication(self, item=None, style='bool', threshold=1.0, return_lines=False):
+        """Returns gene(s)/cellline(s) with copy number above specific threshold."""
+
         values = self._subset_handler(item, self.gene_cn)
         return self._copy_number_dup(values, style, "over", threshold, return_lines)
 
     def deletion(self, item=None, style='bool', threshold=1.0, return_lines=False):
+        """Returns gene(s)/cellline(s) with copy number below specific threshold."""
+
         values = self._subset_handler(item, self.gene_cn)
         return self._copy_number_del(values, style, "under", threshold, return_lines)
 
     def cn_normal(self, item=None, style='bool', threshold=1.0, return_lines=False):
+        """Returns gene(s)/cellline(s) with normal copy number."""
+
         values = self._subset_handler(item, self.gene_cn)
         under =  self._copy_number_dup(values, "values", "under", threshold, return_lines)
         over = self._copy_number_del(under, style, "over", threshold, return_lines)
         return over
 
     def mutated(self, subset=None, output="names", variant=None, item=None, translocations=False, fusions=False, all_except=False):
+        """Returns gene(s)/cellline(s) that are mutated. User can specify the type of mutation."""
 
         if subset:
             mut_dat = self._get_mut_subset(self.mutations, subset)
@@ -171,19 +187,6 @@ class Entity(object):
 
         return self._mutation_handler(mut_dat, output, variant, item, translocations, fusions, all_except)
 
-
-#    def _quant_norm(self, array):
-#        """
-#        array with samples in the columns and probes across the rows
-#        """
-#        arr = array.values
-#        normed_arr = np.zeros_like(arr)
-#        ranked = np.argsort(arr, axis=0)
-#        normed_arr[ranked, np.arange(arr.shape[1])] = np.mean(arr[ranked, np.arange(arr.shape[1])],axis=1)[:,np.newaxis]
-#        normed_df = pd.DataFrame(normed_arr, index=array.index, columns=array.columns)
-#
-#        return normed_df
-#
 
 #################################################################################################################################
 
@@ -234,10 +237,14 @@ class Gene(Entity):
         return mut_dat.loc[mut_dat.DepMap_ID.isin(subset_ids)]
 
 
+###############################################################################################################################
 
 
 class Organelle(Entity):
 
+    """Organelle class is a group of genes defined by their subcellular location.
+    It is instantiated by providing a specific organelle. During instantiation
+    candi with will subset the locations dataset by the user provided organelle."""
 
     def __init__(self, organelle, min_conf=3):
         super().__init__("org")
@@ -254,6 +261,7 @@ class Organelle(Entity):
         return self.location
 
 
+###############################################################################################################################
 
 
 class GeneCluster(Entity):
@@ -270,11 +278,7 @@ class GeneCluster(Entity):
         self.name = name
 
 
-
-
 #################################################################################################################################
-
-
 
 
 class CellLine(Entity):
@@ -328,6 +332,7 @@ class CellLine(Entity):
         return mut_dat_subset
 
 
+####################################################################################################################
 
 
 class Cancer(Entity):
@@ -367,6 +372,10 @@ class Cancer(Entity):
         return self.disease
 
     def mutation_matrix(self, subset=None):
+        """Returns binary nxm dataframe with genes as rows and cell lines as columns.
+        If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
+        If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line."""
+
         mut_dict = self.mutated(subset, output="dict")
         in_list = []
         all_values = []
@@ -392,6 +401,7 @@ class Cancer(Entity):
         return mut_dat.loc[mut_dat.gene.isin(subset)]
 
 
+##############################################################################################################################
 
 
 class CellLineCluster(Entity):
@@ -422,6 +432,10 @@ class CellLineCluster(Entity):
         self._grabber = handlers.Grabber("canc", self.depmap_ids, self._axis)
 
     def mutation_matrix(self, subset=None):
+        """Returns binary nxm dataframe with genes as rows and cell lines as columns.
+        If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
+        If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line."""
+
         mut_dict = self.mutated(subset, output="dict")
         in_list = []
         all_values = []
