@@ -9,18 +9,20 @@ import pandas as pd
 import numpy as np
 import sys
 
-
-
 class Data(object):
-#Class data is used for loading and caching data
-#can be tuned to load specific datasets upon import by editing config.ini
-#can call Data.load() to load any specific dataset
+
+
+        """Class data is used for loading and caching data
+        can be tuned to load specific datasets upon import by editing config.ini
+        can call Data.load() to load any specific dataset
+        """
+
     def __init__(self):
 
         self._file_path = Path(os.path.dirname(os.path.realpath(__file__)))
         config_path = self._file_path / 'data/config.ini'
 
-        parser = configparser.ConfigParser()
+        parser = configparser.ConfigParser() #parses config for data sources
         parser.read(config_path)
 
         self._parser = parser
@@ -29,13 +31,16 @@ class Data(object):
         self._init_depmap_paths()
         self._init_index_tables()
 
-    def _verify_install(self):
+    def _verify_install(self): #ensures data being loaded is present
         try:
             assert "depmap_urls" in self._parser.sections()
         except AssertionError:
             raise(RuntimeError, "CanDI has not been properly installed. Please run CanDI/install.py prior to import")
 
     def _init_sources(self):
+
+        """this function creates paths
+        to source directories of each data source."""
 
         sources = []
 
@@ -46,6 +51,10 @@ class Data(object):
         self.sources = sources
 
     def _init_depmap_paths(self):
+
+        """This function establishes file paths
+        for datasets retrieved from depmap."""
+
         self.depmap_files = self._parser["depmap_files"]
 
         for option in self._parser["depmap_files"]:
@@ -69,6 +78,10 @@ class Data(object):
 
     @staticmethod
     def _handle_autoload(method, path):
+
+        """This function loads datasets 
+        that are under the autoload section 
+        of the config.ini file."""
 
         if method == "genes":
 
@@ -94,6 +107,10 @@ class Data(object):
 
 
     def load(self, key):
+
+        """This function loads a dataset into memory as
+        a pandas DataFrame."""
+
         if hasattr(self, key):
 
             new_path = getattr(self, key)
@@ -104,7 +121,7 @@ class Data(object):
                 index = None
 
             except AttributeError:
-                raise RuntimeError("This package is not compatible with python2. Make sure you're using a Python3 interpreter")
+                raise RuntimeError("CanDI is not compatible with python2. Please ensure you're using Python3.")
 
             df = pd.read_csv(new_path,
                              memory_map = True,
@@ -117,7 +134,11 @@ class Data(object):
         else:
             raise KeyError("{0} cannot find file {1}".format(self, key))
 
+
     def unload(self, key):
+
+        """This function removes a dataset
+        from memory."""
 
         setattr(self, key, self.data_path + self._parser["files"][key])
         gc.collect()
