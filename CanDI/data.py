@@ -12,10 +12,10 @@ import sys
 class Data(object):
 
 
-        """Class data is used for loading and caching data
-        can be tuned to load specific datasets upon import by editing config.ini
-        can call Data.load() to load any specific dataset
-        """
+    """Class data is used for loading and caching data
+    can be tuned to load specific datasets upon import by editing config.ini
+    can call Data.load() to load any specific dataset
+    """
 
     def __init__(self):
 
@@ -79,8 +79,8 @@ class Data(object):
     @staticmethod
     def _handle_autoload(method, path):
 
-        """This function loads datasets 
-        that are under the autoload section 
+        """This function loads datasets
+        that are under the autoload section
         of the config.ini file."""
 
         if method == "genes":
