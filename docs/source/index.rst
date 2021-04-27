@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Simple Documentation Tutorial: CanDI
-=================================
+====================================
 
 Guide:
 ^^^^^^
@@ -13,11 +13,3 @@ Guide:
    :caption: Contents:
 
    modules
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
