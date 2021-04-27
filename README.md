@@ -1,4 +1,5 @@
 # Candi
+[![Documentation Status](https://readthedocs.org/projects/candi/badge/?version=latest)](https://candi.readthedocs.io/en/latest/?badge=latest)
 
 ## Installation
 
