@@ -136,7 +136,7 @@ class Data(object):
 
 
     def unload(self, key):
-        """This function removes a dataset
+        """This function removes a dataset from memory
         Args:
             key:
         """
