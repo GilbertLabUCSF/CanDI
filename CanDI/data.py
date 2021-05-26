@@ -35,10 +35,8 @@ class Data(object):
             raise(RuntimeError, "CanDI has not been properly installed. Please run CanDI/install.py prior to import")
 
     def _init_sources(self):
-
         """this function creates paths
         to source directories of each data source."""
-
         sources = []
 
         for option in self._parser["data_paths"]:
@@ -79,7 +77,6 @@ class Data(object):
         that are under the autoload section
         of the config.ini file.
         """
-
         if method == "genes":
 
             df = pd.read_csv(path,
@@ -104,12 +101,15 @@ class Data(object):
 
 
     def load(self, key):
-        """This function loads a dataset into memory as
-        a pandas DataFrame.
+        """This function loads a dataset into memory as a pandas DataFrame.
 
-        :param key:
-        :return:
-        :rtype: object
+        Note:
+            If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
+            If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
+        Args:
+            key:
+        Returns:
+            [---]
         """
         if hasattr(self, key):
 
@@ -136,10 +136,9 @@ class Data(object):
 
 
     def unload(self, key):
-
         """This function removes a dataset
-        :param key:
+        Args:
+            key:
         """
-
         setattr(self, key, self.data_path + self._parser["files"][key])
         gc.collect()
