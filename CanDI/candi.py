@@ -169,7 +169,7 @@ class Entity(object):
         """It returns the transcription of a specific gene(s)/cellline(s).
 
         Args:
-            itemS:
+            items:
         Returns:
             Filtered `Entity` object
         """
