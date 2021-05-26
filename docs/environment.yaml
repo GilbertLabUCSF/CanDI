@@ -1,12 +1,11 @@
 name: docs
 channels:
-  - conda-forge
   - anaconda
+  - conda-forge
   - defaults
 dependencies:
-  - pandas
   - sphinx==3.2.1
+  - pandas
   - nbsphinx==0.8.1
   - pip:
     - sphinx_rtd_theme==0.4.3
-
