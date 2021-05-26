@@ -1,4 +1,4 @@
-#data.py loads data automatically and contains methods for loading data via user input
+# data.py loads data automatically and contains methods for loading data via user input
 import os
 import gc
 import operator
@@ -10,13 +10,10 @@ import numpy as np
 import sys
 
 class Data(object):
-
-
     """Class data is used for loading and caching data
     can be tuned to load specific datasets upon import by editing config.ini
     can call Data.load() to load any specific dataset
     """
-
     def __init__(self):
 
         self._file_path = Path(os.path.dirname(os.path.realpath(__file__)))

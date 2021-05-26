@@ -8,13 +8,10 @@ from CanDI import data
 
 
 class Grabber:
-
-    """"
-    Grabber class handles all bulk data retrival from the CanDI Classes.
+    """"Grabber class handles all bulk data retrival from the CanDI Classes.
     Behavior for data retrival is defined by the type of data being accessed
     as well as the class doing the retrival. Datasets are not all formatted the same way.
     """
-
     def __init__(self, grabber_type, key, axis):
 
         self.key = key
@@ -23,9 +20,7 @@ class Grabber:
         self.axis = axis #different classes are indexed on different axes
 
     def __call__(self, item):
-
         """Core Grabber function, uses gtype dict to gather data."""
-
         if item not in dir(data):
             raise AttributeError("data has no attribute {}".format(item))
 
@@ -164,15 +159,14 @@ class Grabber:
                 #"translocations": self.merge_two,
                 #"interactions": self.merge_two}
 
-#####################################################################################################################################
+###################################################################################################
 
 class BinaryFilter:
-    
     """BinaryFilter class filters datasets based on a specific threshold.
     It's often useful to filter essentiality, expression, copy number etc.
     on specific thresholds. This class automates that behavior. BinaryFilter
-    has different methods for handling different datatypes."""
-
+    has different methods for handling different datatypes.
+    """
     def __init__(self, margin, handler):
 
         self.margin = margin #number on which to filter
@@ -180,9 +174,9 @@ class BinaryFilter:
 
 
     def __call__(self, vals, style, caller, threshold, return_lines=False):
-
         """Core function of binary filter. Behavior is defined during instantiation
-        and is applied here."""
+        and is applied here.
+        """
 
         self._eval_args(vals, style, threshold, return_lines)
 
@@ -191,8 +185,8 @@ class BinaryFilter:
 
 
     def _float_handler(self, values, style, caller, *args):
-
-        """This function handles filtering of numpy float objects."""
+        """This function handles filtering of numpy float objects.
+        """
 
         if style == 'values':
             return values
@@ -204,8 +198,8 @@ class BinaryFilter:
 
 
     def _series_handler(self, values, style, caller, *args):
-
-        """This function handles filtering pandas series objects."""
+        """This function handles filtering pandas series objects.
+        """
 
         behaviors = {"over": values.ge,
                      "under": values.lt}
@@ -219,8 +213,8 @@ class BinaryFilter:
 
 
     def _frame_handler(self, values, style, caller, threshold, return_lines):
-
-        """This function handles filtering entire pandas dataframes."""
+        """This function handles filtering entire pandas dataframes.
+        """
 
         behaviors = {"over": lambda x: x.gt(self.margin), 
                      "under": lambda x: x.lt(self.margin)}
@@ -244,8 +238,8 @@ class BinaryFilter:
 
     @staticmethod
     def _eval_args(vals=None, style="bool", threshold=1.0, return_lines=False):
-
-        """Function used to make sure arguments are correct."""
+        """Function used to make sure arguments are correct.
+        """
 
         assert style in ["bool", "values"],"style must be 'bool' or 'values'"
         assert 0.0 < threshold <= 1.0, "threshold is invalid, must be between 0 and 1"
@@ -265,12 +259,10 @@ class BinaryFilter:
                 pd.Series: self._series_handler,
                 pd.DataFrame: self._frame_handler}
 
-###################################################################################################################################################
+###################################################################################################
 
 class MutationHandler(object):
-
-    """
-    Handler filtering and querying of mutation data.
+    """Handler filtering and querying of mutation data.
     Has methods for all CanDI objects that allow for more specific filtering.
     Includes methods for querying translocations and fusions.
     MutationHandler behavior is instantiated with instantiation of core CanDI objects.
@@ -286,7 +278,8 @@ class MutationHandler(object):
 
     def __call__(self, mut_dat, output, variant, item, translocations, fusions, all_except):
         """Core function of mutation handler.
-        Behavior is defined on instantiation and applied in this function."""
+        Behavior is defined on instantiation and applied in this function.
+        """
 
         if variant and item:
             mut_dat = self._get_variant(mut_dat, variant, item, all_except=all_except) #get specific variant
@@ -306,10 +299,10 @@ class MutationHandler(object):
 
     @staticmethod
     def _get_variant(mut_dat, variant, item, all_except=False):
-
         """Special case of mutation handler.
         Applied when user wants the specific variant
-        of a specific mutation."""
+        of a specific mutation.
+        """
 
         assert item in mut_dat[variant].unique(), "{0} not found, options are: {1}".format(item, mut_dat[variant].unique())
 
@@ -326,9 +319,9 @@ class MutationHandler(object):
 
 
     def _single_entity_mutated(self, mut_dat, output, variant, item, translocations, fusions, all_except):
-
         """Retrieves mutations related to single entities.
-        Single entities are Gene and CellLine Classes."""
+        Single entities are Gene and CellLine Classes.
+        """
 
         out_dict = {"names": lambda x: list(set(x[self.by[self.version]])), #functions for returning specific data types
                     "dataframe": lambda x: x,
@@ -338,10 +331,10 @@ class MutationHandler(object):
 
 
     def _multiple_entity_mutated(self, mut_dat, output, variant, item, translocations, fusions, all_except):
-
         """Retrieves mutatioens related to multiple entities.
         Multiple entities are Organelle
-        Cancer, CellLineCluster, and GeneCluster classes."""
+        Cancer, CellLineCluster, and GeneCluster classes.
+        """
 
         if self.version == "canc":
             variant = "gene"
