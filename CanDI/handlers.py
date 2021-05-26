@@ -20,7 +20,8 @@ class Grabber:
         self.axis = axis #different classes are indexed on different axes
 
     def __call__(self, item):
-        """Core Grabber function, uses gtype dict to gather data."""
+        """Core Grabber function, uses gtype dict to gather data.
+        """
         if item not in dir(data):
             raise AttributeError("data has no attribute {}".format(item))
 
@@ -36,10 +37,10 @@ class Grabber:
 
         return self.gtype[item](dataset)
 
-    """The following functions are the methods used for data retrival.
-    All datasets are loaded as pandas dataframes. These functions apply
-    standard pandas subsetting and indexing opperations.
-    """
+    # """The following functions are the methods used for data retrival.
+    # All datasets are loaded as pandas dataframes. These functions apply
+    # standard pandas subsetting and indexing opperations.
+    # """
 
     def get_one(self, dataset): #Get one element from user defined dataset
 
@@ -100,9 +101,9 @@ class Grabber:
         return {0: "gene",
                 1: "DepMap_ID"}
  
-    """The following Grabber properties are dictionaries with a dataset name as the key
-    and the retrieval function as the value. Each CanDI class has different op
-    """
+    # """The following Grabber properties are dictionaries with a dataset name as the key
+    # and the retrieval function as the value. Each CanDI class has different op
+    # """
 
     @property
     def gene(self): #defines data retrieval functions for gene class
@@ -240,7 +241,6 @@ class BinaryFilter:
     def _eval_args(vals=None, style="bool", threshold=1.0, return_lines=False):
         """Function used to make sure arguments are correct.
         """
-
         assert style in ["bool", "values"],"style must be 'bool' or 'values'"
         assert 0.0 < threshold <= 1.0, "threshold is invalid, must be between 0 and 1"
         assert vals is not None
@@ -267,7 +267,6 @@ class MutationHandler(object):
     Includes methods for querying translocations and fusions.
     MutationHandler behavior is instantiated with instantiation of core CanDI objects.
     """
-
     def __init__(self, version):
         self.by = {"gene":"DepMap_ID",
                    "line":"gene",
@@ -280,7 +279,6 @@ class MutationHandler(object):
         """Core function of mutation handler.
         Behavior is defined on instantiation and applied in this function.
         """
-
         if variant and item:
             mut_dat = self._get_variant(mut_dat, variant, item, all_except=all_except) #get specific variant
         else:
@@ -303,7 +301,6 @@ class MutationHandler(object):
         Applied when user wants the specific variant
         of a specific mutation.
         """
-
         assert item in mut_dat[variant].unique(), "{0} not found, options are: {1}".format(item, mut_dat[variant].unique())
 
 
@@ -322,7 +319,6 @@ class MutationHandler(object):
         """Retrieves mutations related to single entities.
         Single entities are Gene and CellLine Classes.
         """
-
         out_dict = {"names": lambda x: list(set(x[self.by[self.version]])), #functions for returning specific data types
                     "dataframe": lambda x: x,
                     "dict": lambda x: dict(zip(x[self.by[self.version]], x[variant]))}
@@ -335,7 +331,6 @@ class MutationHandler(object):
         Multiple entities are Organelle
         Cancer, CellLineCluster, and GeneCluster classes.
         """
-
         if self.version == "canc":
             variant = "gene"
         else:

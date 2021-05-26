@@ -27,12 +27,7 @@ class SubsetHandler(object):
             return cases[type(arg)](arg, dat)
 
     def handle_string(self, arg, dat):
-        """
-        :param arg:
-        :param dat:
-        :return:
-        :rtype: object
-        """
+
         if arg in data.genes.index or arg in data.cell_lines.index:
             ids = arg
 
@@ -50,12 +45,7 @@ class SubsetHandler(object):
         return self.get_one(ids, dat)
 
     def handle_tuple(self, arg, dat):
-        '''
-        :param arg:
-        :param dat:
-        :return:
-        :rtype: object
-        '''
+
         ids = self.get_cancer_ids(arg[0], subtype=arg[1])
         return self.get_many(ids, dat)
 
@@ -111,6 +101,7 @@ class Entity(object):
     - :func:`cn_normal <candi.Entity.cn_normal>`
     - :func:`mutated <candi.Entity.mutated>`
     """
+
     # - :func:`essentiality_of <candi.Entity.essentiality_of>`
     # - :func:`essential <candi.Entity.essential>`
     # - :func:`non_essential <candi.Entity.non_essential>`
@@ -127,7 +118,7 @@ class Entity(object):
         else:
             bi_filt = pd.DataFrame
 
-        """Entity functions rely on the following data handlers."""
+        # Entity functions rely on the following data handlers.
         # self._essentiality_filter = handlers.BinaryFilter(5.0, bi_filt)
         self._expression_filter = handlers.BinaryFilter(1.0, bi_filt)
         self._copy_number_del = handlers.BinaryFilter(0.92, bi_filt)
@@ -234,7 +225,8 @@ class Entity(object):
         over = self._copy_number_del(under, style, "over", threshold, return_lines)
         return over
 
-    def mutated(self, subset=None, output="names", variant=None, item=None, translocations=False, fusions=False, all_except=False):
+    def mutated(self, subset=None, output="names", variant=None, item=None, translocations=False, fusions=False,
+                all_except=False):
         """Returns gene(s)/cellline(s) that are mutated. User can specify the type of mutation.
 
         :param item: , defaults to 'None'
@@ -340,7 +332,6 @@ class CellLine(Entity):
     """Contains methods for gather data for a specific cell line.
     Can be instantiated by DepMap_ID (preferred) or name (in all caps).
     """
-
     def __init__(self, cellline):
         super().__init__("line")
         assert type(cellline) == str, "cellline must be string"
@@ -391,7 +382,6 @@ class CellLine(Entity):
 class Cancer(Entity):
     """Collects all data from cell lines of a specific disease or subtype.
     """
-
     def __init__(self, disease, subtype=None, gender=None, source=None, all_except=False):
         super().__init__("canc")
 

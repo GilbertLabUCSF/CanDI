@@ -75,10 +75,10 @@ class Data(object):
 
     @staticmethod
     def _handle_autoload(method, path):
-
         """This function loads datasets
         that are under the autoload section
-        of the config.ini file."""
+        of the config.ini file.
+        """
 
         if method == "genes":
 
@@ -104,10 +104,13 @@ class Data(object):
 
 
     def load(self, key):
-
         """This function loads a dataset into memory as
-        a pandas DataFrame."""
+        a pandas DataFrame.
 
+        :param key:
+        :return:
+        :rtype: object
+        """
         if hasattr(self, key):
 
             new_path = getattr(self, key)
@@ -135,7 +138,8 @@ class Data(object):
     def unload(self, key):
 
         """This function removes a dataset
-        from memory."""
+        :param key:
+        """
 
         setattr(self, key, self.data_path + self._parser["files"][key])
         gc.collect()
