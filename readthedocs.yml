@@ -1,1 +1,4 @@
+python:
+  version: 3.8
+
 requirements_file: requirements.txt
