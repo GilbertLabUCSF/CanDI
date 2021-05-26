@@ -10,7 +10,6 @@ Welcome to CanDI's documentation!
    :maxdepth: 2
    :caption: Contents:
    
-   modules 
    CanDI
 
 
