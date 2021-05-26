@@ -140,12 +140,13 @@ class Entity(object):
     def expressed(self, item=None, style='bool', threshold=1.0, return_lines=False):
         """Returns genes/celllines that are above a certain expression filter.
 
-        :param item: , defaults to 'None'
-        :param style: , defaults to 'bool'
-        :param threshold: , defaults to 1.0
-        :param return_lines: , defaults to `False`
-        :return: filtered `Entity` object
-        :rtype: object
+        Args:
+            item:
+            style:
+            threshold:
+            return_lines:
+        Returns:
+            Filtered `Entity` object
         """
         values = self._subset_handler(item, self.expression)
         return self._expression_filter(values, style, "over", threshold, return_lines)
@@ -153,12 +154,13 @@ class Entity(object):
     def unexpressed(self, item=None, style='bool', threshold=1.0, return_lines=False):
         """Unexpressed function returns genes/cellline(s) that are below a certain expression filter.
 
-        :param item: , defaults to 'None'
-        :param style: , defaults to 'bool'
-        :param threshold: , defaults to 1.0
-        :param return_lines: , defaults to `False`
-        :return: filtered `Entity` object
-        :rtype: object
+        Args:
+            item:
+            style:
+            threshold:
+            return_lines:
+        Returns:
+            Filtered `Entity` object
         """
         values = self._subset_handler(item, self.expression)
         return self._expression_filter(values, style, "under", threshold, return_lines)
@@ -166,9 +168,10 @@ class Entity(object):
     def expression_of(self, items):
         """It returns the transcription of a specific gene(s)/cellline(s).
 
-        :param items:
-        :return: filtered `Entity` object
-        :rtype: object
+        Args:
+            itemS:
+        Returns:
+            Filtered `Entity` object
         """
         return self._subset_handler(items, self.expression)
         # return self.expression.reindex(genes, axis=axis)
@@ -187,12 +190,13 @@ class Entity(object):
     def duplication(self, item=None, style='bool', threshold=1.0, return_lines=False):
         """Returns gene(s)/cellline(s) with copy number above specific threshold.
 
-        :param item: , defaults to 'None'
-        :param style: , defaults to 'bool'
-        :param threshold: , defaults to 1.0
-        :param return_lines: , defaults to `False`
-        :return: filtered `Entity` object
-        :rtype: object
+        Args:
+            item:
+            style:
+            threshold:
+            return_lines:
+        Returns:
+            Filtered `Entity` object
         """
         values = self._subset_handler(item, self.gene_cn)
         return self._copy_number_dup(values, style, "over", threshold, return_lines)
@@ -200,12 +204,13 @@ class Entity(object):
     def deletion(self, item=None, style='bool', threshold=1.0, return_lines=False):
         """Returns gene(s)/cellline(s) with copy number below specific threshold.
 
-        :param item: , defaults to 'None'
-        :param style: , defaults to 'bool'
-        :param threshold: , defaults to 1.0
-        :param return_lines: , defaults to `False`
-        :return: filtered `Entity` object
-        :rtype: object
+        Args:
+            item:
+            style:
+            threshold:
+            return_lines:
+        Returns:
+            Filtered `Entity` object
         """
         values = self._subset_handler(item, self.gene_cn)
         return self._copy_number_del(values, style, "under", threshold, return_lines)
@@ -213,12 +218,13 @@ class Entity(object):
     def cn_normal(self, item=None, style='bool', threshold=1.0, return_lines=False):
         """Returns gene(s)/cellline(s) with normal copy number.
 
-        :param item: , defaults to 'None'
-        :param style: , defaults to 'bool'
-        :param threshold: , defaults to 1.0
-        :param return_lines: , defaults to `False`
-        :return: filtered `Entity` object
-        :rtype: object
+        Args:
+            item:
+            style:
+            threshold:
+            return_lines:
+        Returns:
+            Filtered `Entity` object
         """
         values = self._subset_handler(item, self.gene_cn)
         under = self._copy_number_dup(values, "values", "under", threshold, return_lines)
@@ -229,12 +235,16 @@ class Entity(object):
                 all_except=False):
         """Returns gene(s)/cellline(s) that are mutated. User can specify the type of mutation.
 
-        :param item: , defaults to 'None'
-        :param style: , defaults to 'bool'
-        :param threshold: , defaults to 1.0
-        :param return_lines: , defaults to `False`
-        :return: filtered `Entity` object
-        :rtype: object
+        Args:
+            subset:
+            output:
+            variant:
+            item:
+            translocations:
+            fusions:
+            all_except:
+        Returns:
+            gene(s)/cellline(s) that are mutated
         """
         if subset:
             mut_dat = self._get_mut_subset(self.mutations, subset)
@@ -414,13 +424,13 @@ class Cancer(Entity):
 
     def mutation_matrix(self, subset=None):
         """Returns binary nxm dataframe with genes as rows and cell lines as columns.
-        If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
-        If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
-
-        :param style: , defaults to `None`
-        :param subset:
-        :return: binary nxm dataframe
-        :rtype: object
+        Note:
+            If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
+            If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
+        Args:
+            subset:
+        Returns:
+            binary nxm dataframe
         """
         mut_dict = self.mutated(subset, output="dict")
         in_list = []
@@ -476,13 +486,13 @@ class CellLineCluster(Entity):
 
     def mutation_matrix(self, subset=None):
         """Returns binary nxm dataframe with genes as rows and cell lines as columns.
-        If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
-        If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
-
-        :param subset: , defaults to 'None'
-        :type subset: ParamType, optional
-        :return: binary nxm dataframe
-        :rtype: object
+        Note:
+            If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
+            If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
+        Args:
+            subset:
+        Returns:
+            binary nxm dataframe
         """
         mut_dict = self.mutated(subset, output="dict")
         in_list = []
