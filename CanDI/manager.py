@@ -11,13 +11,10 @@ import pandas as pd
 import requests
 
 class Manager(object):
-
-    """
-    The Manager class handles interations with the datasources
+    """The Manager class handles interations with the datasources
     and the config file. It is used to setup of the config file upon installation.
     All data downloading is done by Manager
     """
-
     def __init__(self):
 
         manager_path = os.path.dirname(os.path.realpath(__file__))

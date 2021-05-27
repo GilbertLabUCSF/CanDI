@@ -1,9 +1,6 @@
 CanDI package
 =============
 
-Submodules
-----------
-
 CanDI.candi module
 ------------------
 
@@ -52,10 +49,3 @@ CanDI.reset\_config module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: CanDI
-   :members:
-   :undoc-members:
-   :show-inheritance:

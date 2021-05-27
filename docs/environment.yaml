@@ -1,0 +1,11 @@
+name: docs
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - sphinx==3.2.1
+  - pandas
+  - nbsphinx==0.8.1
+  - pip:
+    - sphinx_rtd_theme==0.4.3

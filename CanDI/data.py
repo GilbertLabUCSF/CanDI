@@ -1,4 +1,4 @@
-#data.py loads data automatically and contains methods for loading data via user input
+# data.py loads data automatically and contains methods for loading data via user input
 import os
 import gc
 import operator
@@ -10,13 +10,10 @@ import numpy as np
 import sys
 
 class Data(object):
-
-
     """Class data is used for loading and caching data
     can be tuned to load specific datasets upon import by editing config.ini
     can call Data.load() to load any specific dataset
     """
-
     def __init__(self):
 
         self._file_path = Path(os.path.dirname(os.path.realpath(__file__)))
@@ -38,10 +35,8 @@ class Data(object):
             raise(RuntimeError, "CanDI has not been properly installed. Please run CanDI/install.py prior to import")
 
     def _init_sources(self):
-
         """this function creates paths
         to source directories of each data source."""
-
         sources = []
 
         for option in self._parser["data_paths"]:
@@ -78,11 +73,10 @@ class Data(object):
 
     @staticmethod
     def _handle_autoload(method, path):
-
         """This function loads datasets
         that are under the autoload section
-        of the config.ini file."""
-
+        of the config.ini file.
+        """
         if method == "genes":
 
             df = pd.read_csv(path,
@@ -107,10 +101,16 @@ class Data(object):
 
 
     def load(self, key):
+        """This function loads a dataset into memory as a pandas DataFrame.
 
-        """This function loads a dataset into memory as
-        a pandas DataFrame."""
-
+        Note:
+            If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
+            If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
+        Args:
+            key:
+        Returns:
+            [---]
+        """
         if hasattr(self, key):
 
             new_path = getattr(self, key)
@@ -136,9 +136,9 @@ class Data(object):
 
 
     def unload(self, key):
-
-        """This function removes a dataset
-        from memory."""
-
+        """This function removes a dataset from memory
+        Args:
+            key:
+        """
         setattr(self, key, self.data_path + self._parser["files"][key])
         gc.collect()
