@@ -108,10 +108,10 @@ class Grabber:
     @property
     def gene(self): #defines data retrieval functions for gene class
 
-        return {#"pickles": self.get_one,
+        return {"gene_dependency": self.get_one,
                 "gene_effect": self.get_one,
                 "expression": self.get_one,
-                #"counts": self.get_one,
+                "RNASeq_counts": self.get_one,
                 "gene_cn": self.get_one,
                 #"complexes": self.get_one,
                 "locations": self.isin,
@@ -123,10 +123,10 @@ class Grabber:
     @property
     def line(self): #defines data retrieval 
 
-        return {#"pickles": self.get_one,
+        return {"gene_dependency": self.get_one
                 "gene_effect": self.get_one,
                 "expression": self.get_one,
-                #"counts": self.get_one,
+                "RNASeq_counts": self.get_one,
                 "gene_cn": self.get_one,
                 "mutations": self.isin,
                 "fusions": self.merge_two
@@ -137,24 +137,24 @@ class Grabber:
     @property
     def canc(self):
 
-        return {#"pickles": self.get_several,
+        return {"gene_dependency": self.get_several
                 "gene_effect": self.get_several,
                 "expression": self.get_several,
                 "gene_cn": self.get_several,
                 "mutations": self.isin,
                 "fusions": self.isin}
                 #"translocations": self.isin,
-                #"counts": self.get_several}
+                "RNASeq_counts": self.get_several}
 
     @property
     def org(self):
 
-        return {#"pickles": self.get_several,
+        return {"gene_dependency": self.get_several,
                 "gene_effect": self.get_several,
                 "expression": self.get_several,
                 "gene_cn": self.get_several,
                 #"complexes": self.get_several,
-                #"counts": self.get_several,
+                "RNASeq_counts": self.get_several,
                 "mutations": self.isin,
                 "fusions": self.merge_two}
                 #"translocations": self.merge_two,

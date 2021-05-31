@@ -8,7 +8,9 @@ from CanDI import data, handlers
 
 
 class SubsetHandler(object):
-    """SubsetHandler gets subsets from various datasets.
+
+    """
+    SubsetHandler gets subsets from various datasets.
     It provides the logic for determining how to query various datasets.
     Automates finding what type of argument the user provided.
     """
@@ -87,12 +89,16 @@ class SubsetHandler(object):
 
 
 class Entity(object):
-    """Entity is the parent class for all CanDI classes.
+
+    """
+    Entity is the parent class for all CanDI classes.
     It's purpose is to provide a universal connection to the data for it's child classes.
     It's methods are idiomatic functions for the various handlers that apply manipulations to the datasets.
 
     The following functions handle most common biologically relevant queries of candi objects.
     They automatically call the filtering objects that are defined during instantiation.
+    - :func:`dependent <candi.Entity.dependent>`
+    - :func:`non_dependent <candi.Entity.non_depedent>`
     - :func:`expressed <candi.Entity.expressed>`
     - :func:`unexpressed <candi.Entity.unexpressed>`
     - :func:`expression_of <candi.Entity.expression_of>`
@@ -118,8 +124,9 @@ class Entity(object):
         else:
             bi_filt = pd.DataFrame
 
-        # Entity functions rely on the following data handlers.
-        # self._essentiality_filter = handlers.BinaryFilter(5.0, bi_filt)
+        """Entity functions rely on the following data handlers."""
+        self._dependency_filter = handlers.BinaryFilter(0.50, bi_filt)
+        self._essentiality_filter = handlers.BinaryFilter(-1.0, bi_filt)
         self._expression_filter = handlers.BinaryFilter(1.0, bi_filt)
         self._copy_number_del = handlers.BinaryFilter(0.92, bi_filt)
         self._copy_number_dup = handlers.BinaryFilter(1.07, bi_filt)
@@ -155,37 +162,81 @@ class Entity(object):
         """Unexpressed function returns genes/cellline(s) that are below a certain expression filter.
 
         Args:
-            item:
-            style:
-            threshold:
-            return_lines:
+            item: str, optional
+            style: str, optional
+            threshold: float, optional
+            return_lines: bool, optional
         Returns:
             Filtered `Entity` object
         """
         values = self._subset_handler(item, self.expression)
+
         return self._expression_filter(values, style, "under", threshold, return_lines)
 
     def expression_of(self, items):
-        """It returns the transcription of a specific gene(s)/cellline(s).
+        """It returns the expression value in (TPM) of a specific gene(s)/cellline(s).
 
         Args:
-            items:
+            items: str, list
         Returns:
-            Filtered `Entity` object
+            float
         """
         return self._subset_handler(items, self.expression)
         # return self.expression.reindex(genes, axis=axis)
 
-    # def essentiality_of(self, items):
-    #    return self._subset_handler(items, self.pickles)
+    def essential(self, items):
+        """Returns genes/cellline(s) who's gene effect is less than -1.
 
-    # def essential(self, item=None, style='bool', threshold=1.0, return_lines=False):#self, item=None, style='bool'):
-    #    values = self._subset_handler(item, self.pickles)
-    #    return self._essentiality_filter(values, style, "over", threshold, return_lines)
+        Args:
+            items:
+        Returns:
+        """
+        values = self._subset_handler(item, self.gene_effect)
+        return self._essentiality_filter(values, style, "under", threshold, return_lines)
 
-    # def non_essential(self, item=None, style='bool', threshold=1.0, return_lines=False):
-    #    values = self._subset_handler(item, self.pickles)
-    #    return self._essentiality_filter(values, style, "under", threshold, return_lines)
+    def non_essential(self, items):
+        """Returns genes/cellline(s) who's gene effect is greater than -1.
+        Args:
+            items:
+        Returns:
+        """
+        values = self._subset_handler(item, self.gene_effect)
+        return self._essentiality_filter(values, style, "over", threshold, return_lines)
+
+    def dependency_of(self, items):
+        """Returns gene dependency of given items
+        Args:
+            items:
+        Returns:
+            
+        """
+        return self._subset_handler(items, self.gene_dependency)
+
+    def dependent(self, item=None, style='bool', threshold=1.0, return_lines=False):#self, item=None, style='bool'):
+        """Returns genes/cellline(s) whose gene dependency is greater than 0.5
+        Args:
+            item: str, optional
+            style: str, optional
+            threshold: float, optional
+            return_lines: bool, optional
+        Returns:
+
+        """
+        values = self._subset_handler(item, self.gene_dependency)
+        return self._dependency_filter(values, style, "over", threshold, return_lines)
+
+    def non_dependent(self, item=None, style='bool', threshold=1.0, return_lines=False):
+        """Returns genes/celline(s) whose gene dependency is greater than 0.5
+        Args:
+            item: str, optional
+            style: str, optional
+            threshold: float, optional
+            return_lines: bool, optional
+        Returns:
+
+        """
+        values = self._subset_handler(item, self.gene_dependency)
+        return self._dependency_filter(values, style, "under", threshold, return_lines)
 
     def duplication(self, item=None, style='bool', threshold=1.0, return_lines=False):
         """Returns gene(s)/cellline(s) with copy number above specific threshold.
@@ -259,11 +310,13 @@ class Entity(object):
 
 
 class Gene(Entity):
+
     """Class used for gathering information on a single gene.
     Instantiated by gene name (preferred) or ENTREZ ID.
     Note: Not all genes have been asigned entrez ids and gene names are inconsistent across sources.
     If something doesn't show up, try alternate names.
     """
+
     def __init__(self, name, by="symbol"):
         super().__init__("gene")
         assert type(name) == str, "name must be string"
@@ -401,7 +454,7 @@ class Cancer(Entity):
             info = data.cell_lines.loc[~data.cell_lines["primary_disease"].isin([disease])]
             disease = "All Except {}".format(disease)
         else:
-            info = data.cell_lines[data.cell_lines["disease_subtype"].str.contains(subtype, regex=False)]
+            info = data.cell_lines.loc[data.cell_lines["lineage_subtype"] == subtype, ]
         if gender:
             info = info.loc[info.sex == gender]
         if source:
@@ -409,9 +462,9 @@ class Cancer(Entity):
 
         self.disease = disease
         self.depmap_ids = list(info.index)
-        self.names = list(info.stripped_cell_line_name)
+        self.names = list(info.cell_line_name)
         self.ccle_names = list(info.CCLE_Name)
-        self.subtypes = info["lineage"].unique()
+        self.subtypes = info["Subtype"].unique()
         self.sexes = info.sex.unique()
         self.sources = info.source.unique()
         self._info = info
@@ -475,10 +528,10 @@ class CellLineCluster(Entity):
 
         self.disease = info["lineage"].unique()
         self.subtypes = info["lineage_subtype"].unique()
-        self.names = list(info.stripped_cell_line_name)
+        self.names = list(info.cell_line_name)
         self.ccle_names = list(info.CCLE_Name)
         self.depmap_ids = list(info.index)
-        self.genders = info.Gender.unique()
+        self.genders = info.sex.unique()
         self.sources = info.Source.unique()
         self._info = info
         self._string_meth = lambda x, y: x[y]
