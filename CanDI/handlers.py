@@ -113,11 +113,10 @@ class Grabber:
                 "expression": self.get_one,
                 "RNASeq_reads": self.get_one,
                 "gene_cn": self.get_one,
-                #"complexes": self.get_one,
                 "locations": self.isin,
                 "mutations": self.isin,
-                "fusions": self.merge_two
-                }
+                "fusions": self.merge_two}
+                #"complexes": self.get_one,
                 #"translocations": self.merge_two,
                 #"interactions": self.merge_two}
     @property
@@ -129,10 +128,8 @@ class Grabber:
                 "RNASeq_reads": self.get_one,
                 "gene_cn": self.get_one,
                 "mutations": self.isin,
-                "fusions": self.merge_two
+                "fusions": self.merge_two}
                 #"translocations": self.isin}
-            }
-
 
     @property
     def canc(self):
@@ -142,9 +139,9 @@ class Grabber:
                 "expression": self.get_several,
                 "gene_cn": self.get_several,
                 "mutations": self.isin,
-                "fusions": self.isin}
-                #"translocations": self.isin,
+                "fusions": self.isin,
                 "RNASeq_reads": self.get_several}
+                #"translocations": self.isin,
 
     @property
     def org(self):
@@ -153,10 +150,10 @@ class Grabber:
                 "gene_effect": self.get_several,
                 "expression": self.get_several,
                 "gene_cn": self.get_several,
-                #"complexes": self.get_several,
                 "RNASeq_reads": self.get_several,
                 "mutations": self.isin,
                 "fusions": self.merge_two}
+                #"complexes": self.get_several,
                 #"translocations": self.merge_two,
                 #"interactions": self.merge_two}
 
