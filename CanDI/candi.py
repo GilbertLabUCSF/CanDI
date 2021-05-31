@@ -184,17 +184,20 @@ class Entity(object):
         return self._subset_handler(items, self.expression)
         # return self.expression.reindex(genes, axis=axis)
 
-    def essential(self, items):
+    def essential(self, item=None, style="bool", threshold=1.0, return_lines=False):
         """Returns genes/cellline(s) who's gene effect is less than -1.
 
         Args:
-            items:
+            item: str, optional
+            style: str, optional
+            threshold: float, optional
+            return_lines: bool, optional
         Returns:
         """
         values = self._subset_handler(item, self.gene_effect)
         return self._essentiality_filter(values, style, "under", threshold, return_lines)
 
-    def non_essential(self, items):
+    def non_essential(self, item=None, style="bool", threshold=1.0, return_lines=False):
         """Returns genes/cellline(s) who's gene effect is greater than -1.
         Args:
             items:
@@ -208,7 +211,6 @@ class Entity(object):
         Args:
             items:
         Returns:
-            
         """
         return self._subset_handler(items, self.gene_dependency)
 
@@ -220,7 +222,6 @@ class Entity(object):
             threshold: float, optional
             return_lines: bool, optional
         Returns:
-
         """
         values = self._subset_handler(item, self.gene_dependency)
         return self._dependency_filter(values, style, "over", threshold, return_lines)

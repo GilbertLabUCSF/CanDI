@@ -74,8 +74,8 @@ class Manager(object):
 
         candi_name = filename.split(".")[0]
 
-        if "Achilles_" in candi_name:
-            candi_name = candi_name[len("Achilles_"):]
+        if "CRISPR_" in candi_name:
+            candi_name = candi_name[len("CRISPR_"):]
         elif "CCLE_" in candi_name:
             candi_name = candi_name[len("CCLE_"):]
         if 'v2' in candi_name:
