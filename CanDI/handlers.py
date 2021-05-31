@@ -123,7 +123,7 @@ class Grabber:
     @property
     def line(self): #defines data retrieval 
 
-        return {"gene_dependency": self.get_one
+        return {"gene_dependency": self.get_one,
                 "gene_effect": self.get_one,
                 "expression": self.get_one,
                 "RNASeq_reads": self.get_one,
@@ -137,7 +137,7 @@ class Grabber:
     @property
     def canc(self):
 
-        return {"gene_dependency": self.get_several
+        return {"gene_dependency": self.get_several,
                 "gene_effect": self.get_several,
                 "expression": self.get_several,
                 "gene_cn": self.get_several,
