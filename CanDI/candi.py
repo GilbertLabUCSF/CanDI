@@ -183,6 +183,16 @@ class Entity(object):
         """
         return self._subset_handler(items, self.expression)
         # return self.expression.reindex(genes, axis=axis)
+    
+    def effect_of(self, items):
+        """Returns the gene effect of specific gene(s)/cellline(s).
+        
+        Args:
+            items: str, list
+        Returns:
+            float
+        """
+        return self._subset_handler(items, self.gene_effect)
 
     def essential(self, item=None, style="bool", threshold=1.0, return_lines=False):
         """Returns genes/cellline(s) who's gene effect is less than -1.
@@ -533,7 +543,7 @@ class CellLineCluster(Entity):
         self.ccle_names = list(info.CCLE_Name)
         self.depmap_ids = list(info.index)
         self.genders = info.sex.unique()
-        self.sources = info.Source.unique()
+        self.sources = info.source.unique()
         self._info = info
         self._string_meth = lambda x, y: x[y]
         self._grabber = handlers.Grabber("canc", self.depmap_ids, self._axis)

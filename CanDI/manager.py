@@ -171,7 +171,7 @@ class Manager(object):
 
     def format_depmap_data(self, df, path):
 
-        if "AAAS (8086)" in df.columns:
+        if ("AAAS (8086)" in df.columns) or ("AAAS (ENSG00000094914)" in df.columns:
 
             df.rename(columns = lambda s: s.split(" ")[0], inplace=True)
 
@@ -200,13 +200,13 @@ class Manager(object):
                 pass
 
         if "LeftGene" in df.columns:
-           for col in df.columns:
-               if "Gene" in col:
-                   split_cols = df[col].str.split(" ", expand=True)
-                   df[col] = split_cols[0]
-                   df[col[:-4] + "EnsemblID"] = split_cols[1].str.replace("(", "").str.replace(")", "")
+            for col in df.columns:
+                if "Gene" in col:
+                    split_cols = df[col].str.split(" ", expand=True)
+                    df[col] = split_cols[0]
+                    df[col[:-4] + "EnsemblID"] = split_cols[1].str.replace("(", "").str.replace(")", "")
 
-           df.to_csv(path, index=False)
+            df.to_csv(path, index=False)
 
         try:
             formatted = self.parser["formatted"]
