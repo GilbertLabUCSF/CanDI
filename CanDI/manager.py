@@ -171,7 +171,7 @@ class Manager(object):
 
     def format_depmap_data(self, df, path):
 
-        if ("AAAS (8086)" in df.columns) or ("AAAS (ENSG00000094914)" in df.columns:
+        if ("AAAS (8086)" in df.columns) or ("AAAS (ENSG00000094914)" in df.columns):
 
             df.rename(columns = lambda s: s.split(" ")[0], inplace=True)
 
