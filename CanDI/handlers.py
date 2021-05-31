@@ -111,7 +111,7 @@ class Grabber:
         return {"gene_dependency": self.get_one,
                 "gene_effect": self.get_one,
                 "expression": self.get_one,
-                "RNASeq_reads": self.get_one,
+                "rnaseq_reads": self.get_one,
                 "gene_cn": self.get_one,
                 "locations": self.isin,
                 "mutations": self.isin,
@@ -125,7 +125,7 @@ class Grabber:
         return {"gene_dependency": self.get_one,
                 "gene_effect": self.get_one,
                 "expression": self.get_one,
-                "RNASeq_reads": self.get_one,
+                "rnaseq_reads": self.get_one,
                 "gene_cn": self.get_one,
                 "mutations": self.isin,
                 "fusions": self.merge_two}
@@ -140,7 +140,7 @@ class Grabber:
                 "gene_cn": self.get_several,
                 "mutations": self.isin,
                 "fusions": self.isin,
-                "RNASeq_reads": self.get_several}
+                "rnaseq_reads": self.get_several}
                 #"translocations": self.isin,
 
     @property
@@ -150,7 +150,7 @@ class Grabber:
                 "gene_effect": self.get_several,
                 "expression": self.get_several,
                 "gene_cn": self.get_several,
-                "RNASeq_reads": self.get_several,
+                "rnaseq_reads": self.get_several,
                 "mutations": self.isin,
                 "fusions": self.merge_two}
                 #"complexes": self.get_several,
