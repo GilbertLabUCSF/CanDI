@@ -99,18 +99,18 @@ class Entity(object):
     They automatically call the filtering objects that are defined during instantiation.
     - :func:`dependent <candi.Entity.dependent>`
     - :func:`non_dependent <candi.Entity.non_depedent>`
+    - :func:`dependency_of <candi.Entity.dependency_of>`
     - :func:`expressed <candi.Entity.expressed>`
     - :func:`unexpressed <candi.Entity.unexpressed>`
     - :func:`expression_of <candi.Entity.expression_of>`
+    - :func:`essential <candi.Entity.essential>`
+    - :func:`non_essential <candi.Entity.non_essential>`
+    - :func:`effect_of <candi.Entity.effect_of>`
     - :func:`duplication <candi.Entity.duplication>`
     - :func:`deletion <candi.Entity.deletion>`
     - :func:`cn_normal <candi.Entity.cn_normal>`
     - :func:`mutated <candi.Entity.mutated>`
     """
-
-    # - :func:`essentiality_of <candi.Entity.essentiality_of>`
-    # - :func:`essential <candi.Entity.essential>`
-    # - :func:`non_essential <candi.Entity.non_essential>`
 
     def __init__(self, obj):
 
@@ -148,12 +148,27 @@ class Entity(object):
         """Returns genes/celllines that are above a certain expression filter.
 
         Args:
-            item:
-            style:
-            threshold:
-            return_lines:
+            item: str or list, optional
+                name or list of names of items to query expression. Can be gene symbols or DepMap_IDs
+            style: str, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the expression dataset
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass expressed filter.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
+            return_lines: bool, optional
+                not implemented
         Returns:
-            Filtered `Entity` object
+            bool
+                Returns bool if item input is str
+            list
+                Returns list if item arg is list
+            numpy.float64
+                Returns if style arg is 'values' and filter result is 1-d with length of 1.
+            pandas.core.series.Series
+                Returns if style arg is 'values' and filter result is 1-d with length > 1.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values' and filter result is 2-d.
         """
         values = self._subset_handler(item, self.expression)
         return self._expression_filter(values, style, "over", threshold, return_lines)
@@ -162,12 +177,27 @@ class Entity(object):
         """Unexpressed function returns genes/cellline(s) that are below a certain expression filter.
 
         Args:
-            item: str, optional
+            item: str or list, optional
+                name or list of names of items to query expression. Can be gene symbols or DepMap_IDs
             style: str, optional
-            threshold: float, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the expression dataset
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass unexpressed filter.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
             return_lines: bool, optional
+                not implemented
         Returns:
-            Filtered `Entity` object
+            bool
+                Returns bool if item input is str
+            list
+                Returns list if item arg is list
+            numpy.float64
+                Returns if style arg is 'values' and filter result is 1-d with length of 1.
+            pandas.core.series.Series
+                Returns if style arg is 'values' and filter result is 1-d with length > 1.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values' and filter result is 2-d.
         """
         values = self._subset_handler(item, self.expression)
 
@@ -178,8 +208,12 @@ class Entity(object):
 
         Args:
             items: str, list
+                name of gene(s)/cellline(s) to return expression values for
         Returns:
-            float
+            numpy.float64
+                Returns if items arg is type str
+            pandas.core.series.Series
+                Returns if items arg is type list
         """
         return self._subset_handler(items, self.expression)
         # return self.expression.reindex(genes, axis=axis)
@@ -189,8 +223,12 @@ class Entity(object):
         
         Args:
             items: str, list
+                name of gene(s)/cellline(s) to gene effect values for
         Returns:
-            float
+            numpy.float64
+                Returns if items arg is type str
+            pandas.core.series.Series
+                Returns if items arg is type list
         """
         return self._subset_handler(items, self.gene_effect)
 
@@ -198,53 +236,126 @@ class Entity(object):
         """Returns genes/cellline(s) who's gene effect is less than -1.
 
         Args:
-            item: str, optional
+            item: str or list, optional
+                name or list of names of items to query gene effect. Can be gene symbols or DepMap_IDs
             style: str, optional
-            threshold: float, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the gene effect dataset.
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass essential filter.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
             return_lines: bool, optional
+                not implemented
         Returns:
+            bool
+                Returns bool if item input is str
+            list
+                Returns list if item arg is list
+            numpy.float64
+                Returns if style arg is 'values' and filter result is 1-d with length of 1.
+            pandas.core.series.Series
+                Returns if style arg is 'values' and filter result is 1-d with length > 1.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values' and filter result is 2-d.
         """
         values = self._subset_handler(item, self.gene_effect)
         return self._essentiality_filter(values, style, "under", threshold, return_lines)
 
     def non_essential(self, item=None, style="bool", threshold=1.0, return_lines=False):
         """Returns genes/cellline(s) who's gene effect is greater than -1.
+        
         Args:
-            items:
+            item: str or list, optional
+                name or list of names of items to query gene effect. Can be gene symbols or DepMap_IDs
+            style: str, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the gene effect dataset.
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass non_essential filter.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
+            return_lines: bool, optional
+                not implemented
         Returns:
+            bool
+                Returns bool if item input is str
+            list
+                Returns list if item arg is list
+            pandas.core.series.Series
+                Returns if style arg is 'values'.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values'. Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
         """
         values = self._subset_handler(item, self.gene_effect)
         return self._essentiality_filter(values, style, "over", threshold, return_lines)
 
     def dependency_of(self, items):
         """Returns gene dependency of given items
+        
         Args:
-            items:
+            items: str, list
+                name of gene(s)/cellline(s) to gene dependency values for
         Returns:
+            numpy.float64
+                Returns if items arg is type str
+            pandas.core.series.Series
+                Returns if items arg is type list
         """
         return self._subset_handler(items, self.gene_dependency)
 
-    def dependent(self, item=None, style='bool', threshold=1.0, return_lines=False):#self, item=None, style='bool'):
+    def dependent(self, item=None, style='bool', threshold=1.0, return_lines=False):
         """Returns genes/cellline(s) whose gene dependency is greater than 0.5
+        
         Args:
-            item: str, optional
+            item: str or list, optional
+                name or list of names of items to query gene dependency. Can be gene symbols or DepMap_IDs
             style: str, optional
-            threshold: float, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the gene dependency dataset.
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass dependent filter.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
             return_lines: bool, optional
+                not implemented
         Returns:
+            bool
+                Returns bool if item arg is type str
+            list
+                Returns list if item arg is type list
+            numpy.float64
+                Returns if style arg is 'values' and filter result is 1-d with length of 1.
+            pandas.core.series.Series
+                Returns if style arg is 'values' and filter result is 1-d with length > 1.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values' and filter result is 2-d.
         """
         values = self._subset_handler(item, self.gene_dependency)
         return self._dependency_filter(values, style, "over", threshold, return_lines)
 
     def non_dependent(self, item=None, style='bool', threshold=1.0, return_lines=False):
-        """Returns genes/celline(s) whose gene dependency is greater than 0.5
+        """Returns genes/celline(s) whose gene dependency is less than 0.5
+        
         Args:
-            item: str, optional
+            item: str or list, optional
+                name or list of names of items to query gene dependency. Can be gene symbols or DepMap_IDs
             style: str, optional
-            threshold: float, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the gene dependency dataset.
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass non_dependent filter.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
             return_lines: bool, optional
+                not implemented
         Returns:
-
+            bool
+                Returns bool if item arg is type str
+            list
+                Returns list if item arg is type list
+            numpy.float64
+                Returns if style arg is 'values' and filter result is 1-d with length of 1.
+            pandas.core.series.Series
+                Returns if style arg is 'values' and filter result is 1-d with length > 1.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values' and filter result is 2-d.
         """
         values = self._subset_handler(item, self.gene_dependency)
         return self._dependency_filter(values, style, "under", threshold, return_lines)
@@ -253,12 +364,27 @@ class Entity(object):
         """Returns gene(s)/cellline(s) with copy number above specific threshold.
 
         Args:
-            item:
-            style:
-            threshold:
-            return_lines:
+            item: str or list, optional
+                name or list of names of items to query gene copy number. Can be gene symbols or DepMap_IDs
+            style: str, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the gene copy number dataset.
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass duplication filter.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
+            return_lines: bool, optional
+                not implemented
         Returns:
-            Filtered `Entity` object
+            bool
+                Returns bool if item arg is type str
+            list
+                Returns list if item arg is type list
+            numpy.float64
+                Returns if style arg is 'values' and filter result is 1-d with length of 1.
+            pandas.core.series.Series
+                Returns if style arg is 'values' and filter result is 1-d with length > 1.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values' and filter result is 2-d.
         """
         values = self._subset_handler(item, self.gene_cn)
         return self._copy_number_dup(values, style, "over", threshold, return_lines)
@@ -267,12 +393,27 @@ class Entity(object):
         """Returns gene(s)/cellline(s) with copy number below specific threshold.
 
         Args:
-            item:
-            style:
-            threshold:
-            return_lines:
+            item: str or list, optional
+                name or list of names of items to query gene copy number. Can be gene symbols or DepMap_IDs
+            style: str, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the gene copy number dataset.
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass deletion filter.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
+            return_lines: bool, optional
+                not implemented
         Returns:
-            Filtered `Entity` object
+            bool
+                Returns bool if item arg is type str
+            list
+                Returns list if item arg is type list
+            numpy.float64
+                Returns if style arg is 'values' and filter result is 1-d with length of 1.
+            pandas.core.series.Series
+                Returns if style arg is 'values' and filter result is 1-d with length > 1.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values' and filter result is 2-d.
         """
         values = self._subset_handler(item, self.gene_cn)
         return self._copy_number_del(values, style, "under", threshold, return_lines)
@@ -281,12 +422,27 @@ class Entity(object):
         """Returns gene(s)/cellline(s) with normal copy number.
 
         Args:
-            item:
-            style:
-            threshold:
-            return_lines:
+            item: str or list, optional
+                name or list of names of items to query gene copy number. Can be gene symbols or DepMap_IDs
+            style: str, optional
+                style argument defines the type of output desired. Options are "bool" or "values"
+                "bool" returns the gene/cellline name(s). "values" returns a slice from the gene copy number dataset.
+            threshold: float between 0 and 1, optional
+                This is the percentage of gene(s)/cellline(s) that need to pass copy number normal filters.
+                Only relevant for Cancer, CellLineCluster, Organelle, and GeneCluster objects.
+            return_lines: bool, optional
+                not implemented
         Returns:
-            Filtered `Entity` object
+            bool
+                Returns bool if item arg is type str
+            list
+                Returns list if item arg is type list
+            numpy.float64
+                Returns if style arg is 'values' and filter result is 1-d with length of 1.
+            pandas.core.series.Series
+                Returns if style arg is 'values' and filter result is 1-d with length > 1.
+            pands.core.frame.DataFrame
+                Returns if style arg is 'values' and filter result is 2-d.
         """
         values = self._subset_handler(item, self.gene_cn)
         under = self._copy_number_dup(values, "values", "under", threshold, return_lines)
@@ -298,15 +454,27 @@ class Entity(object):
         """Returns gene(s)/cellline(s) that are mutated. User can specify the type of mutation.
 
         Args:
-            subset:
-            output:
-            variant:
+            subset: str or list, optional
+                name or list of names to query for mutations
+            output: str
+                desired datatype for output. Can be 'names', 'dataframe', or 'dict'
+            variant: str
+                Column in mutations data set for specific filtering
             item:
-            translocations:
-            fusions:
-            all_except:
+                Value in variant column for filtering
+            translocations: bool
+                not implemented
+            fusions: bool
+                not implemented
+            all_except: bool
+                output all values except those passing the given mutation filters
         Returns:
-            gene(s)/cellline(s) that are mutated
+            list
+                list of gene(s)/cellline(s) that pass mutation filters
+            pandas.core.frame.DataFrame
+                DataFrame of all mutational data for items that pass mutation filters
+            dict
+                Dictionary of with gene names as keys and list of depmap_ids as values.
         """
         if subset:
             mut_dat = self._get_mut_subset(self.mutations, subset)
@@ -413,7 +581,7 @@ class CellLine(Entity):
         try:
             info = data.cell_lines.loc[cellline]
         except KeyError:
-            info = data.cell_lines.loc[data.cell_lines.stripped_cell_line_name == cellline].iloc[0]
+            info = data.cell_lines.loc[data.cell_lines.cell_line_name == cellline].iloc[0]
         except KeyError:
             info = data.cell_lines.loc[data.cell_lines.CCLE_Name == cellline].iloc[0]
         except IndexError:
@@ -423,7 +591,7 @@ class CellLine(Entity):
         self.ccle_name = info.CCLE_Name
         self.name = info["stripped_cell_line_name"]
         self.tissue = info.lineage
-        self.aliases = info.Alias
+        self.aliases = info.alias
         self.cosmic_id = info.COSMICID
         self.sanger_id = info["Sanger_Model_ID"]
         self.sex = info.sex
@@ -487,14 +655,16 @@ class Cancer(Entity):
         return self.disease
 
     def mutation_matrix(self, subset=None):
-        """Returns binary nxm dataframe with genes as rows and cell lines as columns.
+        """Returns binary n by m dataframe with DepMap_IDs as rows and gene symbols as columns.
+        
         Note:
             If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
             If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
         Args:
-            subset:
+            subset: str or list, optional
+                Specific gene or list of genes for which to generate a mutation matrix
         Returns:
-            binary nxm dataframe
+            pandas.core.frame.DataFrame
         """
         mut_dict = self.mutated(subset, output="dict")
         in_list = []
@@ -549,14 +719,16 @@ class CellLineCluster(Entity):
         self._grabber = handlers.Grabber("canc", self.depmap_ids, self._axis)
 
     def mutation_matrix(self, subset=None):
-        """Returns binary nxm dataframe with genes as rows and cell lines as columns.
+        """Returns binary n by m dataframe with DepMap_IDs as rows and gene symbols as columns.
+        
         Note:
             If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
             If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
         Args:
-            subset:
+            subset: str or list, optional
+                Specific gene or list of genes for which to generate a mutation matrix
         Returns:
-            binary nxm dataframe
+            pandas.core.frame.DataFrame
         """
         mut_dict = self.mutated(subset, output="dict")
         in_list = []
