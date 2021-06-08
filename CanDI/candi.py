@@ -207,7 +207,7 @@ class Entity(object):
         """It returns the expression value in (TPM) of a specific gene(s)/cellline(s).
 
         Args:
-            items: str, list
+            items: str or list
                 name of gene(s)/cellline(s) to return expression values for
         Returns:
             numpy.float64
@@ -222,7 +222,7 @@ class Entity(object):
         """Returns the gene effect of specific gene(s)/cellline(s).
         
         Args:
-            items: str, list
+            items: str or list
                 name of gene(s)/cellline(s) to gene effect values for
         Returns:
             numpy.float64
@@ -292,7 +292,7 @@ class Entity(object):
         """Returns gene dependency of given items
         
         Args:
-            items: str, list
+            items: str or list
                 name of gene(s)/cellline(s) to gene dependency values for
         Returns:
             numpy.float64
@@ -702,8 +702,15 @@ class CellLineCluster(Entity):
 
         assert isinstance(lines, MutableSequence), "Must be list or array-like"
 
-        if not all_except:
-            info = data.cell_lines.loc[lines]
+        if not all_except:    
+            try:
+                info = data.cell_lines.loc[lines]
+            except KeyError:
+                info = data.cell_lines.loc[data.cell_lines.cell_line_name.isin(lines),]
+            except KeyError:
+                info = data.cell_lines.loc[data.cell_lines.CCLE_Name.isin(lines),]
+            except IndexError:
+                raise ValueError("Cannot Instantiate CellLine object with {}".format(lines))
         else:
             info = data.cell_lines[~lines]
 

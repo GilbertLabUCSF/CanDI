@@ -19,7 +19,17 @@ dds <- DESeqDataSetFromMatrix(countData=counts.mat,
                               colData=coldata, 
                               design= ~condition,
                               tidy = TRUE)
+
+dds <- estimateSizeFactors(dds)
+#Filter lowly expressed genes
+idx <- rowSums(counts(dds, normalized=TRUE) >= 5) >= 3
+dds <- dds[idx,]
+
 dds <- DESeq(dds) #run deseq
 res <- results(dds) #get results
+#Show results
+print(summary(res))
+print(head(res))
+
 write.csv(res, args[3]) #save results
 
