@@ -14,7 +14,7 @@ class Data(object):
     can be tuned to load specific datasets upon import by editing config.ini
     can call Data.load() to load any specific dataset
     """
-    def __init__(self):
+    def __init__(self, testing = False):
 
         self._file_path = Path(os.path.dirname(os.path.realpath(__file__)))
         config_path = self._file_path / 'data/config.ini'
@@ -23,7 +23,7 @@ class Data(object):
         parser.read(config_path)
 
         self._parser = parser
-        self._verify_install()
+        #self._verify_install()
         self._init_sources()
         self._init_depmap_paths()
         self._init_index_tables()
