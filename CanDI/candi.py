@@ -702,7 +702,7 @@ class CellLineCluster(Entity):
 
         assert isinstance(lines, MutableSequence), "Must be list or array-like"
 
-        if not all_except:    
+        if not all_except:
             try:
                 info = data.cell_lines.loc[lines]
             except KeyError:
@@ -727,7 +727,7 @@ class CellLineCluster(Entity):
 
     def mutation_matrix(self, subset=None):
         """Returns binary n by m dataframe with DepMap_IDs as rows and gene symbols as columns.
-        
+
         Note:
             If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
             If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
