@@ -16,8 +16,8 @@ class Data(object):
     """
     def __init__(self):
 
-        self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute()
-        config_path = self._file_path / 'setup/data/config.ini'
+        self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
+        config_path = self._file_path / 'data/config.ini'
         print(self._file_path)
         print(config_path)
 
