@@ -18,8 +18,6 @@ class Data(object):
 
         self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
         config_path = self._file_path / 'data/config.ini'
-        print(self._file_path)
-        print(config_path)
 
         parser = configparser.ConfigParser() #parses config for data sources
         parser.read(config_path)
@@ -67,7 +65,6 @@ class Data(object):
         for option in self._parser["autoload_info"]:
             try:
                new_path = self._file_path / self._parser.get("autoload_info", option)
-               print(new_path)
                assert os.path.exists(new_path)
                setattr(self, option, self._handle_autoload(option, new_path))
             except AssertionError:
