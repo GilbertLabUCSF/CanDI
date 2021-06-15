@@ -4,7 +4,7 @@ from collections import OrderedDict, MutableSequence
 import itertools as it
 import pandas as pd
 import numpy as np
-from CanDI.candi import  data, grabber
+from CanDI.candi import data, grabber
 from CanDI.structures import entity
 
 class SubsetHandler(object):

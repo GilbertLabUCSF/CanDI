@@ -14,16 +14,18 @@ class Data(object):
     can be tuned to load specific datasets upon import by editing config.ini
     can call Data.load() to load any specific dataset
     """
-    def __init__(self, testing = False):
+    def __init__(self):
 
-        self._file_path = Path(os.path.dirname(os.path.realpath(__file__)))
-        config_path = self._file_path / 'data/config.ini'
+        self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute()
+        config_path = self._file_path / 'setup/data/config.ini'
+        print(self._file_path)
+        print(config_path)
 
         parser = configparser.ConfigParser() #parses config for data sources
         parser.read(config_path)
 
         self._parser = parser
-        #self._verify_install()
+        self._verify_install()
         self._init_sources()
         self._init_depmap_paths()
         self._init_index_tables()
@@ -65,6 +67,7 @@ class Data(object):
         for option in self._parser["autoload_info"]:
             try:
                new_path = self._file_path / self._parser.get("autoload_info", option)
+               print(new_path)
                assert os.path.exists(new_path)
                setattr(self, option, self._handle_autoload(option, new_path))
             except AssertionError:
