@@ -16,7 +16,7 @@ class Data(object):
     """
     def __init__(self):
 
-        self._file_path = Path(os.path.dirname(os.path.realpath(__file__)))
+        self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
         config_path = self._file_path / 'data/config.ini'
 
         parser = configparser.ConfigParser() #parses config for data sources

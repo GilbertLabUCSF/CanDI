@@ -19,6 +19,8 @@ class Manager(object):
 
         manager_path = os.path.dirname(os.path.realpath(__file__))
         cfig_path = manager_path + "/data/config.ini"
+        print(manager_path)
+        print(cfig_path)
         parser = configparser.ConfigParser()
         parser.read(cfig_path)
 
