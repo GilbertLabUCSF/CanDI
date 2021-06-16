@@ -10,11 +10,13 @@ from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 import requests
 
+
 class Manager(object):
     """The Manager class handles interations with the datasources
     and the config file. It is used to setup of the config file upon installation.
     All data downloading is done by Manager
     """
+
     def __init__(self):
 
         manager_path = os.path.dirname(os.path.realpath(__file__))
@@ -25,7 +27,6 @@ class Manager(object):
         self.manager_path = manager_path
         self.cfig_path = Path(cfig_path)
         self.parser = parser
-
 
     def sanger_download():
         pass
@@ -44,7 +45,6 @@ class Manager(object):
         self.parser["depmap_urls"] = self.download_info
         self.parser["depmap_files"] = self.depmap_files
 
-
     def parse_release(self):
 
         download_urls = {}
@@ -52,7 +52,6 @@ class Manager(object):
         for table in self.response["table"]:
 
             if self.release == table["releaseName"] and table["downloadUrl"]:
-
                 download_urls[table["fileName"]] = table["downloadUrl"]
                 depmap_files[self.format_filename(table["fileName"])] = table["fileName"]
 
@@ -74,8 +73,8 @@ class Manager(object):
 
         candi_name = filename.split(".")[0]
 
-        if "CRISPR_" in candi_name:
-            candi_name = candi_name[len("CRISPR_"):]
+        if "Achilles_" in candi_name:
+            candi_name = candi_name[len("Achilles_"):]
         elif "CCLE_" in candi_name:
             candi_name = candi_name[len("CCLE_"):]
         if 'v2' in candi_name:
@@ -103,17 +102,15 @@ class Manager(object):
 
             with open(path, "w") as f:
 
-               for chunk in r.iter_content(chunk_size=chunk_size):
-
-                   total += chunk_size
-                   chunk = chunk.decode("utf-8")
-                   chunk = chunk.replace("\t", ",")
-                   f.write(chunk)
+                for chunk in r.iter_content(chunk_size=chunk_size):
+                    total += chunk_size
+                    chunk = chunk.decode("utf-8")
+                    chunk = chunk.replace("\t", ",")
+                    f.write(chunk)
             print("Downloading {} complete!".format(filename))
             downloads = self.parser["downloads"]
 
             downloads[filename] = str(path)
-
 
     def parallel_fetch(self, entries):
         print("Starting Pool")
@@ -121,15 +118,13 @@ class Manager(object):
             for i in entries:
                 executor.submit(self.fetch_url, i)
 
-
     def download_defaults(self):
 
-        default_sources = json.loads(self.parser.get("defaults","downloads"))
-        to_download =  json.loads(self.parser.get("defaults", default_sources[0])) 
+        default_sources = json.loads(self.parser.get("defaults", "downloads"))
+        to_download = json.loads(self.parser.get("defaults", default_sources[0]))
 
         entries = [self.manage_request(i, "depmap") for i in to_download]
         self.parallel_fetch(entries)
-
 
     def manage_request(self, name, path, filename=False):
 
@@ -154,11 +149,13 @@ class Manager(object):
     def depmap_autoformat(self):
 
         try:
-            downloaded = self.parser["downloads"] 
+            downloaded = self.parser["downloads"]
         except KeyError:
-            raise(RuntimeError, "There are not data files to format. Please download data and try again or run install.py")
+            raise RuntimeError(
+                "There are not data files to format. Please download data and try again or run install.py"
+            )
 
-        for k,v in downloaded.items():
+        for k, v in downloaded.items():
             try:
                 if k not in self.parser["formatted"]:
                     print("Formatting {}".format(k))
@@ -171,16 +168,16 @@ class Manager(object):
 
     def format_depmap_data(self, df, path):
 
-        if ("AAAS (8086)" in df.columns) or ("AAAS (ENSG00000094914)" in df.columns):
+        if "AAAS (8086)" in df.columns:
 
-            df.rename(columns = lambda s: s.split(" ")[0], inplace=True)
+            df.rename(columns=lambda s: s.split(" ")[0], inplace=True)
 
             if "Unnamed:" in df.columns:
-                df.rename(columns={"Unnamed:":"DepMap_ID"}, inplace=True)
+                df.rename(columns={"Unnamed:": "DepMap_ID"}, inplace=True)
 
             df = df.set_index("DepMap_ID").T
             df.reset_index(inplace=True)
-            df.rename(columns={"index":"gene"}, inplace=True)
+            df.rename(columns={"index": "gene"}, inplace=True)
             df.set_index("gene", inplace=True)
             df.to_csv(path)
 
@@ -200,13 +197,13 @@ class Manager(object):
                 pass
 
         if "LeftGene" in df.columns:
-            for col in df.columns:
-                if "Gene" in col:
-                    split_cols = df[col].str.split(" ", expand=True)
-                    df[col] = split_cols[0]
-                    df[col[:-4] + "EnsemblID"] = split_cols[1].str.replace("(", "").str.replace(")", "")
+           for col in df.columns:
+               if "Gene" in col:
+                   split_cols = df[col].str.split(" ", expand=True)
+                   df[col] = split_cols[0]
+                   df[col[:-4] + "EnsemblID"] = split_cols[1].str.replace("(", "").str.replace(")", "")
 
-            df.to_csv(path, index=False)
+           df.to_csv(path, index=False)
 
         try:
             formatted = self.parser["formatted"]
@@ -216,7 +213,6 @@ class Manager(object):
 
         formatted[path.split("/")[-1]] = path
 
-
     @staticmethod
     def write_config(cfig_path, parser):
 
@@ -225,8 +221,9 @@ class Manager(object):
             parser.write(f)
             f.close()
 
+
 if __name__ == "__main__":
     m = Manager()
-    #m.depmap_download("fusions")
+    # m.depmap_download("fusions")
     m.depmap_autoformat()
     m.write_config(m.cfig_path, m.parser)

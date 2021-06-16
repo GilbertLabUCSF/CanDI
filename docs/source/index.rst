@@ -5,13 +5,26 @@
 
 Welcome to CanDI's documentation!
 =================================
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   
+
+   README
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Package:
+
    CanDI
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Notebooks:
+
+   get-started.ipynb
+   brca_heatmap.ipynb
+   kras_egfr_scatter.ipynb
+   deseq_setup.ipynb
 
 Indices and tables
 ==================

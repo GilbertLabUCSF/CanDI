@@ -1,7 +1,6 @@
 from manager import Manager
 
 if __name__ == "__main__":
-
     m = Manager()
     m.get_depmap_info()
     m.write_config(m.cfig_path, m.parser)
