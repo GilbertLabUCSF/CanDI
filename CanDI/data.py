@@ -9,17 +9,19 @@ import pandas as pd
 import numpy as np
 import sys
 
+
 class Data(object):
     """Class data is used for loading and caching data
     can be tuned to load specific datasets upon import by editing config.ini
     can call Data.load() to load any specific dataset
     """
+
     def __init__(self):
 
         self._file_path = Path(os.path.dirname(os.path.realpath(__file__)))
         config_path = self._file_path / 'data/config.ini'
 
-        parser = configparser.ConfigParser() #parses config for data sources
+        parser = configparser.ConfigParser()  # parses config for data sources
         parser.read(config_path)
 
         self._parser = parser
@@ -28,11 +30,13 @@ class Data(object):
         self._init_depmap_paths()
         self._init_index_tables()
 
-    def _verify_install(self): #ensures data being loaded is present
+    def _verify_install(self):  # ensures data being loaded is present
         try:
             assert "depmap_urls" in self._parser.sections()
         except AssertionError:
-            raise(RuntimeError, "CanDI has not been properly installed. Please run CanDI/install.py prior to import")
+            raise RuntimeError(
+                "CanDI has not been properly installed. Please run CanDI/install.py prior to import"
+            )
 
     def _init_sources(self):
         """this function creates paths
@@ -64,12 +68,11 @@ class Data(object):
 
         for option in self._parser["autoload_info"]:
             try:
-               new_path = self._file_path / self._parser.get("autoload_info", option)
-               assert os.path.exists(new_path)
-               setattr(self, option, self._handle_autoload(option, new_path))
+                new_path = self._file_path / self._parser.get("autoload_info", option)
+                assert os.path.exists(new_path)
+                setattr(self, option, self._handle_autoload(option, new_path))
             except AssertionError:
-               raise(RuntimeError, "You are missing essential index table: {}. exiting...".format(new_path))
-
+                raise RuntimeError("You are missing essential index table: {}. exiting...".format(new_path))
 
     @staticmethod
     def _handle_autoload(method, path):
@@ -82,8 +85,8 @@ class Data(object):
             df = pd.read_csv(path,
                              memory_map=True,
                              low_memory=False,
-                             dtype={"ENTREZ ID":str},
-                             index_col = "Approved symbol")
+                             dtype={"ENTREZ ID": str},
+                             index_col="Approved symbol")
 
         elif method == "cell_lines":
 
@@ -98,7 +101,6 @@ class Data(object):
                              low_memory=True)
 
         return df
-
 
     def load(self, key):
         """This function loads a dataset into memory as a pandas DataFrame.
@@ -124,16 +126,15 @@ class Data(object):
                 raise RuntimeError("CanDI is not compatible with python2. Please ensure you're using Python3.")
 
             df = pd.read_csv(new_path,
-                             memory_map = True,
-                             low_memory = False,
-                             index_col = index)
+                             memory_map=True,
+                             low_memory=False,
+                             index_col=index)
 
             setattr(self, key, df)
             return getattr(self, key)
 
         else:
             raise KeyError("{0} cannot find file {1}".format(self, key))
-
 
     def unload(self, key):
         """This function removes a dataset from memory
