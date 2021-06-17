@@ -1,12 +1,7 @@
 CanDI.candi module
 ==================
 
-.. automodule:: CanDI.candi
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: CanDI
+.. automodule:: CanDI.candi.candi
    :members:
    :undoc-members:
    :show-inheritance:
@@ -25,7 +20,7 @@ These tables are automatically loaded as pandas dataframes upon import of CanDI
 It is highly recommended the user familiarize themself with the columns and indexes of these tables.
 All candi classes operate through these index tables.
 
-.. automodule:: CanDI.data
+.. automodule:: CanDI.candi.data
    :members:
    :undoc-members:
    :show-inheritance:
