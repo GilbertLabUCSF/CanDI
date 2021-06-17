@@ -1,51 +1,31 @@
-CanDI package
-=============
-
 CanDI.candi module
-------------------
+==================
 
 .. automodule:: CanDI.candi
    :members:
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: CanDI
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 CanDI.data module
------------------
+=================
+The data class is instantiated at import. This class contains paths to all data downloaded with CanDI.
+It has internal methods for loading datasets into memory as pandas dataframes.
+There are 3 index tables that candi relies on for fetch all data:
+
+- cell_lines
+- genes
+- locations
+
+These tables are automatically loaded as pandas dataframes upon import of CanDI
+It is highly recommended the user familiarize themself with the columns and indexes of these tables.
+All candi classes operate through these index tables.
 
 .. automodule:: CanDI.data
    :members:
    :undoc-members:
    :show-inheritance:
-
-CanDI.handlers module
----------------------
-
-.. automodule:: CanDI.handlers
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-CanDI.install module
---------------------
-
-.. automodule:: CanDI.install
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-CanDI.manager module
---------------------
-
-.. automodule:: CanDI.manager
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-CanDI.reset\_config module
---------------------------
-
-.. automodule:: CanDI.reset_config
-   :members:
-   :undoc-members:
-   :show-inheritance:
-

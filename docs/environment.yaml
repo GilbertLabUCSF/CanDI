@@ -4,8 +4,10 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - python
   - sphinx==3.2.1
   - pandas
-  - nbsphinx==0.8.1
+  - pip
   - pip:
+    - nbsphinx
     - sphinx_rtd_theme==0.4.3
