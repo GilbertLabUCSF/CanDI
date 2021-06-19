@@ -32,7 +32,7 @@ class Data(object):
         try:
             assert "depmap_urls" in self._parser.sections()
         except AssertionError:
-            raise(RuntimeError, "CanDI has not been properly installed. Please run CanDI/install.py prior to import")
+            raise RuntimeError("CanDI has not been properly installed. Please run CanDI/setup/install.py prior to import")
 
     def _init_sources(self):
         """this function creates paths
@@ -59,16 +59,17 @@ class Data(object):
                 setattr(self, option, new_path)
             except AssertionError:
                 setattr(self, option, None)
+            
 
     def _init_index_tables(self):
 
         for option in self._parser["autoload_info"]:
             try:
-               new_path = self._file_path / self._parser.get("autoload_info", option)
-               assert os.path.exists(new_path)
-               setattr(self, option, self._handle_autoload(option, new_path))
+                new_path = self._file_path / self._parser.get("autoload_info", option)
+                assert os.path.exists(new_path)
+                setattr(self, option, self._handle_autoload(option, new_path))
             except AssertionError:
-               raise(RuntimeError, "You are missing essential index table: {}. exiting...".format(new_path))
+                raise RuntimeError("You are missing essential index table: {}. exiting...".format(new_path))
 
 
     @staticmethod
@@ -102,14 +103,13 @@ class Data(object):
 
     def load(self, key):
         """This function loads a dataset into memory as a pandas DataFrame.
-
-        Note:
-            If the nth row and mth column is equal to 0 the nth gene is not mutated in the mth cell line.
-            If the nth row and mth column is equal to 1 the nth gene is mutated in the mth cell line.
+        
         Args:
-            key:
+            key: str
+               name of dataset to load into memory
         Returns:
-            [---]
+            pandas.core.frame.DataFrame
+                Pandas DataFrame is returned and saved as an attribute within the data object of the same name as key
         """
         if hasattr(self, key):
 
@@ -137,8 +137,22 @@ class Data(object):
 
     def unload(self, key):
         """This function removes a dataset from memory
-        Args:
-            key:
+        
+        Args: 
+            key: str
+                name of the dataset to remove from memory
+        Returns:
+            None
+                Data object of with same name as key is removed from memory and attribute is returned to dataset file path.
         """
-        setattr(self, key, self.data_path + self._parser["files"][key])
-        gc.collect()
+        
+        try:
+            assert isinstance(getattr(self, key), pd.core.frame.DataFrame)
+        except AssertionError:
+            raise RuntimeError("{} is not currently loaded into memory".format(key))
+            
+        
+        new_path = self._depmap_path / self._parser.get("depmap_files", key)
+        assert os.path.exists(new_path)
+        setattr(self, key, new_path)
+        
