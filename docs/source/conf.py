@@ -40,6 +40,9 @@ exclude_patterns = []
 
 # -- Options for HTML output -------------------------------------------------
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
+html_theme = "stanford_theme"
+html_theme_path = ["_themes", ]
+
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 if not on_rtd:  # only import and set the theme if we're building docs locally
