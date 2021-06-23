@@ -62,7 +62,7 @@ cloned folder.
 
 .. code:: python
 
-   import CanDI as can
+   from CanDI import candi
 
 **OR**, you can add path to the `CanDI` directory if you want to use it from other directories.
 
@@ -71,7 +71,7 @@ cloned folder.
    import sys
    sys.path.append("path-to-candi-directory")
 
-   import CanDI as can
+   from CanDI import candi
 
 CanDI Objects
 ~~~~~~~~~~~~~
