@@ -20,6 +20,8 @@ The biologically relevant abstraction classes (Gene, CellLine, Cancer, Organelle
 CanDI.candi module
 ------------------
 
+`Link to candi_module.pdf file <https://github.com/GilbertLabUCSF/CanDI/blob/docs/docs/candi_module.pdf>`_
+
 .. automodule:: CanDI.candi.candi
    :members:
    :undoc-members:

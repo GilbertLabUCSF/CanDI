@@ -54,7 +54,7 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 html_logo = "_static/imgs/Logo.png"
 html_theme_options = {
     'logo_only': True,
-    'display_version': True,
+    'display_version': False,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
