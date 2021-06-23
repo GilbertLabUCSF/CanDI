@@ -39,11 +39,20 @@ exclude_patterns = []
 
 
 # -- Options for HTML output -------------------------------------------------
+# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-html_theme = 'sphinx_rtd_theme'
+if not on_rtd:  # only import and set the theme if we're building docs locally
+    import stanford_theme
+    html_theme = 'stanford_theme'
+    html_theme_path = [stanford_theme.get_html_theme_path()]
+# otherwise, readthedocs.org uses their theme by default, so no need to specify it
+
+html_logo = "_static/imgs/Logo.png"
+html_theme_options = {
+    'logo_only': True,
+    'display_version': True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

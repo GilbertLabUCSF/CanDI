@@ -11,6 +11,9 @@ Welcome to CanDI's documentation!
 
    README
 
+.. image:: _static/imgs/Poster.png
+   :width: 400
+
 .. toctree::
    :maxdepth: 4
    :caption: Package:

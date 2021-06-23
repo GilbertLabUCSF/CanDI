@@ -1,5 +1,5 @@
 sphinx==3.2.1
-sphinx_rtd_theme==0.4.3
+stanford-theme
 nbsphinx
 readthedocs-sphinx-search==0.1.0rc3
 pandas
