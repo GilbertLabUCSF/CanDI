@@ -29,7 +29,7 @@ datasets.
 
 .. code:: bash
 
-   python CanDI/CanDI/install.py
+   python CanDI/CanDI/setup/install.py
 
 Downloaded and formatted datasets would organize this way:
 
