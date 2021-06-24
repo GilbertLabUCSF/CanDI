@@ -23,7 +23,7 @@ class Data(object):
         parser.read(config_path)
 
         self._parser = parser
-        self._verify_install()
+        #self._verify_install()
         self._init_sources()
         self._init_depmap_paths()
         self._init_index_tables()
