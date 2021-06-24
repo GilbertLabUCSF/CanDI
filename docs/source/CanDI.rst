@@ -5,9 +5,7 @@ The CanDI data integrator is a python library built on top of the Pandas that is
 - The Cancer Dependency Map
 - The Cancer Cell Line Encyclopedia
 - The Comprehensive Resource of Mammalian Protein Complexes (CORUM)
-- Protein localization data from The Cell Atlas
-- The Map of the Cell
-- The In Silico Surfaceome
+- Protein Localization Data from: The Cell Atlas, Map of the Cell, and The In Silico Surfaceome.
 
 Access to all datasets is controlled via a python class called Data. Upon import the data class reads the config file established during installation and defines unique paths to each dataset and automatically loads the cell line index table and the gene index table.
 Installation of CanDI, configuration, and data retrieval is handled by a manager class that is accessed indirectly through installation scripts and the Data class.
@@ -19,11 +17,19 @@ The biologically relevant abstraction classes (Gene, CellLine, Cancer, Organelle
 
 CanDI.candi module
 ------------------
-`Link to candi_module.pdf file <https://github.com/GilbertLabUCSF/CanDI/blob/docs/docs/candi_module.pdf>`_
-.. automodule:: CanDI.candi.candi
+User facing CanDI classes (Gene, CellLine, Organelle, Cancer, GeneCluster, CellLineCluster) all inherit from a parent Entity Class.
+
+.. automodule:: CanDI.structures.entity
    :members:
    :undoc-members:
    :show-inheritance:
+
+The following are the main CanDI classes. These are what users will use to access and cross reference data.
+
+.. automodule:: CanDI.candi.candi
+   :members: Gene, CellLine, Organelle, Cancer, CellLineCluster, GeneCluster
+   :undoc-members: SubsetHandler
+   :show-inheritance: Gene, CellLine, Organelle, Cancer, CellLineCluster, GeneCluster
 
 CanDI.data module
 ------------------
