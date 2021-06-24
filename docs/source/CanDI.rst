@@ -17,8 +17,6 @@ The biologically relevant abstraction classes (Gene, CellLine, Cancer, Organelle
 
 CanDI.candi module
 ------------------
-`Link to candi_module.pdf file <https://github.com/GilbertLabUCSF/CanDI/blob/docs/docs/candi_module.pdf>`_
-
 User facing CanDI classes (Gene, CellLine, Organelle, Cancer, GeneCluster, CellLineCluster) all inherit from a parent Entity Class.
 
 .. automodule:: CanDI.structures.entity
