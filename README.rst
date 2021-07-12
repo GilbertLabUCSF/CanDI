@@ -19,7 +19,7 @@ command:
 
 .. code:: bash
 
-   conda env create -f CaDI/candi.yml -n candi
+   conda env create -f CanDI/candi.yml -n candi
 
 Prepare Datasets
 ~~~~~~~~~~~~~~~~
