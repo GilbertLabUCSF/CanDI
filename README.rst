@@ -2,6 +2,7 @@ CanDI - A global cancer data integrator
 =======================================
 
 |Documentation Status|
+|DOI|
 
 Package Installation
 --------------------
@@ -92,3 +93,6 @@ CanDI Objects
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/candi/badge/?version=latest
    :target: https://candi.readthedocs.io/en/latest/?badge=latest
+
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.1186/s13073-021-00987-8.svg
+   :target: https://doi.org/10.1186/s13073-021-00987-8
