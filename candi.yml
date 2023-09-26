@@ -1,5 +1,6 @@
 name: candi
 dependencies:
+ - python==3.9
  - pandas
  - configparser
  - requests
