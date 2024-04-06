@@ -3,6 +3,7 @@ CanDI - A global cancer data integrator
 
 |Documentation Status|
 |DOI|
+|Dataverse|
 
 Package Installation
 --------------------
@@ -96,3 +97,6 @@ CanDI Objects
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.1186/s13073-021-00987-8.svg
    :target: https://doi.org/10.1186/s13073-021-00987-8
+
+.. |Dataverse| image:: https://img.shields.io/badge/Dataverse-10.7910/DVN/JIAT0H-red
+  :target: https://doi.org/10.7910/DVN/JIAT0H
