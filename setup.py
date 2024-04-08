@@ -20,7 +20,7 @@ setup(
     url = 'https://github.com/GilbertLabUCSF/CanDI',
     entry_points={
         'console_scripts': [
-            'candi-install = CanDI.setup.install.__main__:main',
+            'candi-install = CanDI.setup.install:main',
         ],
     },
     classifiers=[
