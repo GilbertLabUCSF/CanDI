@@ -1,17 +1,11 @@
+"""Metadata and scripts to collect datasets for CanDI
+https://doi.org/10.7910/DVN/JIAT0H
+"""
 import os
 import requests
 from tqdm import tqdm
 import sys
 
-"""This file contains all metadata of datasets deposited for CanDI
-
-The datasets are deposited in the Harvard Dataverse repository:
-- https://doi.org/10.7910/DVN/JIAT0H
-
-Codes are adapted from:
-- https://github.com/mims-harvard/TDC/blob/main/tdc/utils/load.py OR
-- https://github.com/snap-stanford/GEARS/blob/master/gears/utils.py
-"""
 
 CANDI_DATAVERSE_DOI = 'doi:10.7910/DVN/JIAT0H'
 
@@ -138,17 +132,3 @@ def depmap_dataverse_download(path, return_type=None):
         return file_names
     elif return_type == ["url", "name"]:
         return url_list, file_names
-
-
-# from pyDataverse.api import NativeApi, DataAccessApi
-# from pyDataverse.models import Dataverse
-
-# BASE_URL = 'https://dataverse.harvard.edu'
-# api = NativeApi(BASE_URL)
-# data_api = DataAccessApi(BASE_URL)
-# dataset = api.get_dataset(doi)
-# files_list = dataset.json()['data']['latestVersion']['files']
-# for file in files_list:
-#     filename = file["dataFile"]["filename"]
-#     file_id = file["dataFile"]["id"]
-#     print(filename, file_id)
