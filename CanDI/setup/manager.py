@@ -15,9 +15,13 @@ class Manager(object):
     and the config file. It is used to setup of the config file upon installation.
     All data downloading is done by Manager
     """
-    def __init__(self, download_source=None):
+    def __init__(self, download_source=None, data_dir=None):
 
-        manager_path = os.path.dirname(os.path.realpath(__file__))
+        if data_dir:
+            manager_path = data_dir
+        else:
+            manager_path = os.path.dirname(os.path.realpath(__file__))
+        
         cfig_path = manager_path + "/data/config.ini"
         parser = configparser.ConfigParser()
         parser.read(cfig_path.replace(".ini", ".draft.ini"))
