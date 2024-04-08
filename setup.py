@@ -18,6 +18,11 @@ setup(
         "tqdm",
     ],
     url = 'https://github.com/GilbertLabUCSF/CanDI',
+    entry_points={
+        'console_scripts': [
+            'candi = CanDI.__main__:main',
+        ],
+    },
     classifiers=[
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
