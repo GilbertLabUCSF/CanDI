@@ -222,6 +222,12 @@ class Manager(object):
 
 
     def download_reformatted_data(self, depmap_release=''):
+        if not os.path.exists(self.manager_path + '/data/'):
+            os.makedirs(self.manager_path + '/data/')
+
+        if not os.path.exists(self.manager_path + '/data/depmap/'):
+            os.makedirs(self.manager_path + '/data/depmap/')
+
         if self.download_source == "dataverse":
             urls, file_names = depmap_dataverse_download(
                 self.manager_path + '/data/depmap/', 
