@@ -11,13 +11,13 @@ Package Installation
 CanDI is now available on `PyPI <https://pypi.org/project/CanDI/>`_ and can be installed with pip:
 
 .. code:: bash
-pip install CanDI
+   pip install CanDI
 
 ___
 For the latest version (development version) install from GitHub:
 
 .. code:: bash
-pip install git+https://github.com/GilbertLabUCSF/CanDI.git
+   pip install git+https://github.com/GilbertLabUCSF/CanDI.git
 
 
 Prepare Datasets
