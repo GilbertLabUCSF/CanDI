@@ -1,5 +1,5 @@
 import argparse
-from manager import Manager
+from .manager import Manager
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

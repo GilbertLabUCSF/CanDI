@@ -8,7 +8,7 @@ import pandas as pd
 from time import sleep
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from dataverse import depmap_dataverse_download
+from .dataverse import depmap_dataverse_download
 
 class Manager(object):
     """The Manager class handles interations with the datasources

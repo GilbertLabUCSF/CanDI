@@ -1,5 +1,5 @@
 import pandas as pd
-from CanDI.structures import handlers
+from ..CanDI.structures import handlers
 
 class Entity(object):
 
