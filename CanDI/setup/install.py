@@ -1,7 +1,7 @@
 import argparse
 from .manager import Manager
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", help="Specify the download source", default="dataverse")
     args = parser.parse_args()
@@ -24,3 +24,6 @@ if __name__ == "__main__":
 
     else:
         raise ValueError("Invalid source. Please specify either 'dataverse' or 'depmap'")
+    
+if __name__ == "__main__":
+    main()
