@@ -8,16 +8,20 @@ import pandas as pd
 from time import sleep
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from dataverse import depmap_dataverse_download
+from .dataverse import depmap_dataverse_download
 
 class Manager(object):
     """The Manager class handles interations with the datasources
     and the config file. It is used to setup of the config file upon installation.
     All data downloading is done by Manager
     """
-    def __init__(self, download_source=None):
+    def __init__(self, download_source=None, data_dir=None):
 
-        manager_path = os.path.dirname(os.path.realpath(__file__))
+        if data_dir:
+            manager_path = data_dir
+        else:
+            manager_path = os.path.dirname(os.path.realpath(__file__))
+        
         cfig_path = manager_path + "/data/config.ini"
         parser = configparser.ConfigParser()
         parser.read(cfig_path.replace(".ini", ".draft.ini"))
@@ -218,6 +222,12 @@ class Manager(object):
 
 
     def download_reformatted_data(self, depmap_release=''):
+        if not os.path.exists(self.manager_path + '/data/'):
+            os.makedirs(self.manager_path + '/data/')
+
+        if not os.path.exists(self.manager_path + '/data/depmap/'):
+            os.makedirs(self.manager_path + '/data/depmap/')
+
         if self.download_source == "dataverse":
             urls, file_names = depmap_dataverse_download(
                 self.manager_path + '/data/depmap/', 

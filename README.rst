@@ -8,20 +8,19 @@ CanDI - A global cancer data integrator
 Package Installation
 --------------------
 
-First, you need to clone this repository to use CanDI.
+CanDI is now available on `PyPI <https://pypi.org/project/CanDI/>`_ and can be installed with pip:
 
 .. code:: bash
 
-   git clone https://github.com/GilbertLabUCSF/CanDI.git
+   pip install CanDI
 
-We suggest to use `Conda <https://docs.conda.io/en/latest/>`__ as a
-package manager and environment management system. You can create a
-fresh conda environment with all ``CanDI``\ ’s requirements using bellow
-command:
+___
+For the latest version (development version) install from GitHub:
 
 .. code:: bash
+   
+   pip install git+https://github.com/GilbertLabUCSF/CanDI.git
 
-   conda env create -f CanDI/environment.yml -n candi
 
 Prepare Datasets
 ~~~~~~~~~~~~~~~~
@@ -59,19 +58,7 @@ Package Usage
 Import CanDI into python
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-To import ``CanDI``, your active directory in python must be same as the
-cloned folder.
-
 .. code:: python
-
-   from CanDI import candi
-
-**OR**, you can add path to the `CanDI` directory if you want to use it from other directories.
-
-.. code:: python
-
-   import sys
-   sys.path.append("path-to-candi-directory")
 
    from CanDI import candi
 
