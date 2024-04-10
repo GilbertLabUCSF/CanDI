@@ -4,12 +4,14 @@ from CanDI.__version__ import version
 from pathlib import Path
 
 this_directory = Path(__file__).parent
+long_description = (this_directory / "README.rst").read_text()
 
 setup(
     name='CanDI',
     description='A cancer data integration package',
     version=version,
     packages=find_packages(),
+    long_description=long_description,
     python_requires='>=3.9',
     install_requires=[
         "pandas",
