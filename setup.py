@@ -7,7 +7,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.rst").read_text()
 
 setup(
-    name='CanDI',
+    name='PyCanDI',
     description='A cancer data integration package',
     version=version,
     packages=find_packages(),
