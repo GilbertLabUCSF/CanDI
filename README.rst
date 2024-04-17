@@ -8,11 +8,11 @@ CanDI - A global cancer data integrator
 Package Installation
 --------------------
 
-CanDI is now available on `PyPI <https://pypi.org/project/pyCanDI/>`_ and can be installed with pip:
+CanDI is now available on `PyPI <https://pypi.org/project/PyCanDI/>`_ and can be installed with pip:
 
 .. code:: bash
 
-   pip install CanDI
+   pip install PyCanDI
 
 ___
 For the latest version (development version) install from GitHub:
