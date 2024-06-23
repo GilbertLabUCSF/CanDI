@@ -13,7 +13,7 @@ import pandas as pd
 from time import sleep
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from .dataverse import depmap_dataverse_download, CANDI_DATAVERSE_DOI
+from dataverse import depmap_dataverse_download, CANDI_DATAVERSE_DOI
 
 
 class Manager(object):
