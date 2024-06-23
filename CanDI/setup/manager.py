@@ -61,7 +61,6 @@ class DataverseDepMap(Manager):
         self.download_source = 'dataverse, ' + CANDI_DATAVERSE_DOI
     
     def download_reformatted_data(self):
-        # depmap release
         if not os.path.exists(self.manager_path + '/data/'):
             os.makedirs(self.manager_path + '/data/')
 
