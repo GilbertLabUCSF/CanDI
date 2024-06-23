@@ -67,34 +67,30 @@ class DataverseDepMap(Manager):
         if not os.path.exists(self.manager_path + '/data/depmap/'):
             os.makedirs(self.manager_path + '/data/depmap/')
 
-        if self.download_source == "dataverse":
-            urls, file_names = depmap_dataverse_download(
-                self.manager_path + '/data/depmap/', 
-                return_type= ["url", "name"]
-            )
+        urls, file_names = depmap_dataverse_download(
+            self.manager_path + '/data/depmap/', 
+            return_type= ["url", "name"]
+        )
 
-            depmap_urls = {
-                file: url for url, file in zip(urls, file_names)
-            }
+        depmap_urls = {
+            file: url for url, file in zip(urls, file_names)
+        }
 
-            depmap_files = {}
-            for file in file_names:
-                f_key = file.split('.')[0]
-                f_key = f_key.replace('CCLE_','')
-                f_key = f_key.replace('CRISPR_','')
-                depmap_files[f_key] = file 
+        depmap_files = {}
+        for file in file_names:
+            f_key = file.split('.')[0]
+            f_key = f_key.replace('CCLE_','')
+            f_key = f_key.replace('CRISPR_','')
+            depmap_files[f_key] = file 
 
-            formatted = {
-                f'{self.manager_path}/data/depmap/{file}': file for file in file_names 
-                if 'readme' not in file.lower()
-            }
+        formatted = {
+            f'{self.manager_path}/data/depmap/{file}': file for file in file_names 
+            if 'readme' not in file.lower()
+        }
 
-            self.parser["depmap_urls"] = depmap_urls
-            self.parser["depmap_files"] = depmap_files
-            self.parser["formatted"] = formatted
-
-        else:
-            raise RuntimeError("Set download source to 'dataverse' before running download_formated_data")
+        self.parser["depmap_urls"] = depmap_urls
+        self.parser["depmap_files"] = depmap_files
+        self.parser["formatted"] = formatted
 
 
 class BroadDepMap(Manager):
