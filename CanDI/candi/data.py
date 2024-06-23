@@ -14,10 +14,15 @@ class Data(object):
     can be tuned to load specific datasets upon import by editing config.ini
     can call Data.load() to load any specific dataset
     """
-    def __init__(self):
+    def __init__(self, config_path='auto', verbose=False):
 
-        self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
-        config_path = self._file_path / 'data/config.ini'
+        if config_path == 'auto':
+            self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
+            config_path = self._file_path / 'data/config.ini'
+        elif os.path.exists(config_path) == False:
+            raise FileNotFoundError("Config file not found at {}".format(config_path))
+        elif os.path.exists(config_path) == True:
+            if verbose: print("Using config file at {}".format(config_path))
 
         parser = configparser.ConfigParser() #parses config for data sources
         parser.read(config_path)
