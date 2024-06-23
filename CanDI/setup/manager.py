@@ -1,37 +1,50 @@
+"""
+The manager module handles interations with the datasources
+and the config file. It is used to setup of the config file upon installation.
+All data downloading is done by Manager class and its subclasses.
+"""
+
 import os
 import configparser
 import json
 import time
 import requests
-import shutil
 import pandas as pd
 from time import sleep
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from .dataverse import depmap_dataverse_download
+from .dataverse import depmap_dataverse_download, CANDI_DATAVERSE_DOI
 
 
 class Manager(object):
-    """The Manager class handles interations with the datasources
-    and the config file. It is used to setup of the config file upon installation.
-    All data downloading is done by Manager
-    """
-    def __init__(self, cfig_path='auto', download_source=None, data_dir=None):
+    def __init__(self, manager_path='auto', cfig_path='auto', verbose=False):
+        """Initializes the Manager class
 
-        if data_dir:
-            manager_path = data_dir
-        else:
+        Args:
+            manager_path (str, optional): The path to the manager directory. This is where the data will be stored.
+            cfig_path (str, optional): The path to the config file.
+        """
+        if manager_path == 'auto':
             manager_path = os.path.dirname(os.path.realpath(__file__))
+        else:
+            # make sure the path is a directory and exists or create it
+            if not os.path.exists(manager_path):
+                os.makedirs(manager_path)
+
         if cfig_path == 'auto':
-            
-        cfig_path = manager_path + "/data/config.ini"
+            cfig_path = manager_path + "/data/config.ini"
+
+        if verbose:
+            print(f"Manager Path: {manager_path}")
+            print(f"Config Path: {cfig_path}")
+
         parser = configparser.ConfigParser()
         parser.read(cfig_path.replace(".ini", ".draft.ini"))
 
         self.manager_path = manager_path
         self.cfig_path = Path(cfig_path)
         self.parser = parser
-        self.download_source = download_source
+
     @staticmethod    
     def write_config(cfig_path, parser):
 
@@ -41,10 +54,55 @@ class Manager(object):
             f.close()
 
 
-class BroadDepMap(Manager):
-    def __init__(self, cfig_path='auto'):
-        super().__init__(cfig_path)
+class DataverseDepMap(Manager):
+    def __init__(self, manager_path='auto', cfig_path='auto', verbose=False):
+        super().__init__(manager_path, cfig_path, verbose)
+        self.release = '21Q4' # default release uploded to CanDI dataverse
+        self.download_source = 'dataverse, ' + CANDI_DATAVERSE_DOI
+    
+    def download_reformatted_data(self):
+        # depmap release
+        if not os.path.exists(self.manager_path + '/data/'):
+            os.makedirs(self.manager_path + '/data/')
 
+        if not os.path.exists(self.manager_path + '/data/depmap/'):
+            os.makedirs(self.manager_path + '/data/depmap/')
+
+        if self.download_source == "dataverse":
+            urls, file_names = depmap_dataverse_download(
+                self.manager_path + '/data/depmap/', 
+                return_type= ["url", "name"]
+            )
+
+            depmap_urls = {
+                file: url for url, file in zip(urls, file_names)
+            }
+
+            depmap_files = {}
+            for file in file_names:
+                f_key = file.split('.')[0]
+                f_key = f_key.replace('CCLE_','')
+                f_key = f_key.replace('CRISPR_','')
+                depmap_files[f_key] = file 
+
+            formatted = {
+                f'{self.manager_path}/data/depmap/{file}': file for file in file_names 
+                if 'readme' not in file.lower()
+            }
+
+            self.parser["depmap_urls"] = depmap_urls
+            self.parser["depmap_files"] = depmap_files
+            self.parser["formatted"] = formatted
+
+        else:
+            raise RuntimeError("Set download source to 'dataverse' before running download_formated_data")
+
+
+class BroadDepMap(Manager):
+    def __init__(self, manager_path='auto', cfig_path='auto', verbose=False):
+        super().__init__(manager_path, cfig_path, verbose)
+        self.download_source = 'Broad DepMap, https://depmap.org/'
+        
     def get_depmap_info(self, release="latest"):
 
         depmap = self.parser["download_urls"]["depmap"]
@@ -237,52 +295,9 @@ class BroadDepMap(Manager):
         formatted[path.split("/")[-1]] = path
 
 
-    def download_reformatted_data(self, depmap_release=''):
-        if not os.path.exists(self.manager_path + '/data/'):
-            os.makedirs(self.manager_path + '/data/')
-
-        if not os.path.exists(self.manager_path + '/data/depmap/'):
-            os.makedirs(self.manager_path + '/data/depmap/')
-
-        if self.download_source == "dataverse":
-            urls, file_names = depmap_dataverse_download(
-                self.manager_path + '/data/depmap/', 
-                return_type= ["url", "name"]
-            )
-
-            depmap_urls = {
-                file: url for url, file in zip(urls, file_names)
-            }
-
-            depmap_files = {}
-            for file in file_names:
-                f_key = file.split('.')[0]
-                f_key = f_key.replace('CCLE_','')
-                f_key = f_key.replace('CRISPR_','')
-                depmap_files[f_key] = file 
-
-            formatted = {
-                f'{self.manager_path}/data/depmap/{file}': file for file in file_names 
-                if 'readme' not in file.lower()
-            }
-
-            self.parser["depmap_urls"] = depmap_urls
-            self.parser["depmap_files"] = depmap_files
-            self.parser["formatted"] = formatted
-
-        else:
-            raise RuntimeError("Set download source to 'dataverse' before running download_formated_data")
-
 class SangerDepMap(Manager):
     def __init__(self, cfig_path='auto'):
         super().__init__(cfig_path)
 
     def sanger_download():
         pass
-
-
-if __name__ == "__main__":
-    m = Manager()
-    #m.depmap_download("fusions")
-    m.depmap_autoformat()
-    m.write_config(m.cfig_path, m.parser)
