@@ -5,7 +5,7 @@ import itertools as it
 import pandas as pd
 import numpy as np
 from . import data, grabber
-from . import entity
+from ..structures import entity
 
 class SubsetHandler(object):
 
