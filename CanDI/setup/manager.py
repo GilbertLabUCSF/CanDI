@@ -10,15 +10,17 @@ from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 import requests
 
+
 class Manager(object):
     """The Manager class handles interations with the datasources
     and the config file. It is used to setup of the config file upon installation.
     All data downloading is done by Manager
     """
-    def __init__(self):
+    def __init__(self, cfig_path='auto'):
 
         manager_path = os.path.dirname(os.path.realpath(__file__))
-        cfig_path = manager_path + "/data/config.ini"
+        if cfig_path == 'auto':
+            cfig_path = manager_path + "/data/config.ini"
         parser = configparser.ConfigParser()
         parser.read(cfig_path)
 
@@ -26,9 +28,18 @@ class Manager(object):
         self.cfig_path = Path(cfig_path)
         self.parser = parser
 
+    @staticmethod
+    def write_config(cfig_path, parser):
 
-    def sanger_download():
-        pass
+        print("Writing config file")
+        with open(cfig_path, "w") as f:
+            parser.write(f)
+            f.close()
+
+
+class BroadDepMap(Manager):
+    def __init__(self, cfig_path='auto'):
+        super().__init__(cfig_path)
 
     def get_depmap_info(self, release="latest"):
 
@@ -43,7 +54,6 @@ class Manager(object):
         self.download_info, self.depmap_files = self.parse_release()
         self.parser["depmap_urls"] = self.download_info
         self.parser["depmap_files"] = self.depmap_files
-
 
     def parse_release(self):
 
@@ -70,16 +80,21 @@ class Manager(object):
 
         return release_info["releaseName"]
 
-    def format_filename(self, filename):
+    def format_filename(self, filename, release):
 
+        # set candi_name to the filename without the extension
         candi_name = filename.split(".")[0]
 
-        if "CRISPR_" in candi_name:
-            candi_name = candi_name[len("CRISPR_"):]
-        elif "CCLE_" in candi_name:
-            candi_name = candi_name[len("CCLE_"):]
-        if 'v2' in candi_name:
-            candi_name = candi_name[:-len("_v2")]
+        if release == "21Q4":
+            if "CRISPR_" in candi_name:
+                candi_name = candi_name[len("CRISPR_"):]
+            elif "CCLE_" in candi_name:
+                candi_name = candi_name[len("CCLE_"):]
+            if 'v2' in candi_name:
+                candi_name = candi_name[:-len("_v2")]
+        else:
+            #TODO: add more cases for different releases, e.g. 24Q4 new file formats
+            pass
 
         return candi_name
 
@@ -114,13 +129,11 @@ class Manager(object):
 
             downloads[filename] = str(path)
 
-
     def parallel_fetch(self, entries):
         print("Starting Pool")
         with ThreadPoolExecutor(max_workers=4) as executor:
             for i in entries:
                 executor.submit(self.fetch_url, i)
-
 
     def download_defaults(self):
 
@@ -129,7 +142,6 @@ class Manager(object):
 
         entries = [self.manage_request(i, "depmap") for i in to_download]
         self.parallel_fetch(entries)
-
 
     def manage_request(self, name, path, filename=False):
 
@@ -169,44 +181,48 @@ class Manager(object):
                 df = pd.read_csv(v, low_memory=False, memory_map=True)
                 self.format_depmap_data(df, v)
 
-    def format_depmap_data(self, df, path):
+    def format_depmap_data(self, df, path, release):
 
-        if ("AAAS (8086)" in df.columns) or ("AAAS (ENSG00000094914)" in df.columns):
+        if release == "21Q4":
+            if ("AAAS (8086)" in df.columns) or ("AAAS (ENSG00000094914)" in df.columns):
 
-            df.rename(columns = lambda s: s.split(" ")[0], inplace=True)
+                df.rename(columns = lambda s: s.split(" ")[0], inplace=True)
 
-            if "Unnamed:" in df.columns:
-                df.rename(columns={"Unnamed:":"DepMap_ID"}, inplace=True)
+                if "Unnamed:" in df.columns:
+                    df.rename(columns={"Unnamed:":"DepMap_ID"}, inplace=True)
 
-            df = df.set_index("DepMap_ID").T
-            df.reset_index(inplace=True)
-            df.rename(columns={"index":"gene"}, inplace=True)
-            df.set_index("gene", inplace=True)
-            df.to_csv(path)
+                df = df.set_index("DepMap_ID").T
+                df.reset_index(inplace=True)
+                df.rename(columns={"index":"gene"}, inplace=True)
+                df.set_index("gene", inplace=True)
+                df.to_csv(path)
 
-        if "Protein_Change" in df.columns:
+            if "Protein_Change" in df.columns:
 
-            try:
-                df.drop("Unnamed: 0", axis=1, inplace=True)
+                try:
+                    df.drop("Unnamed: 0", axis=1, inplace=True)
+                    df.to_csv(path, index=False)
+                except KeyError:
+                    pass
+
+            if "Hugo_Symbol" in df.columns:
+                try:
+                    df.rename(columns={"Hugo_Symbol": "gene"}, inplace=True)
+                    df.to_csv(path, index=False)
+                except KeyError:
+                    pass
+
+            if "LeftGene" in df.columns:
+                for col in df.columns:
+                    if "Gene" in col:
+                        split_cols = df[col].str.split(" ", expand=True)
+                        df[col] = split_cols[0]
+                        df[col[:-4] + "EnsemblID"] = split_cols[1].str.replace("(", "").str.replace(")", "")
+
                 df.to_csv(path, index=False)
-            except KeyError:
-                pass
-
-        if "Hugo_Symbol" in df.columns:
-            try:
-                df.rename(columns={"Hugo_Symbol": "gene"}, inplace=True)
-                df.to_csv(path, index=False)
-            except KeyError:
-                pass
-
-        if "LeftGene" in df.columns:
-            for col in df.columns:
-                if "Gene" in col:
-                    split_cols = df[col].str.split(" ", expand=True)
-                    df[col] = split_cols[0]
-                    df[col[:-4] + "EnsemblID"] = split_cols[1].str.replace("(", "").str.replace(")", "")
-
-            df.to_csv(path, index=False)
+        else:
+            #TODO: add more cases for different releases, e.g. 24Q4 new file formats
+            pass
 
         try:
             formatted = self.parser["formatted"]
@@ -217,13 +233,13 @@ class Manager(object):
         formatted[path.split("/")[-1]] = path
 
 
-    @staticmethod
-    def write_config(cfig_path, parser):
+class SangerDepMap(Manager):
+    def __init__(self, cfig_path='auto'):
+        super().__init__(cfig_path)
 
-        print("Writing config file")
-        with open(cfig_path, "w") as f:
-            parser.write(f)
-            f.close()
+    def sanger_download():
+        pass
+
 
 if __name__ == "__main__":
     m = Manager()
