@@ -1,14 +1,14 @@
 import os
-import sys
 import configparser
 import json
 import time
+import requests
+import shutil
+import pandas as pd
 from time import sleep
 from pathlib import Path
-import contextlib
 from concurrent.futures import ThreadPoolExecutor
-import pandas as pd
-import requests
+from .dataverse import depmap_dataverse_download
 
 
 class Manager(object):
@@ -16,19 +16,23 @@ class Manager(object):
     and the config file. It is used to setup of the config file upon installation.
     All data downloading is done by Manager
     """
-    def __init__(self, cfig_path='auto'):
+    def __init__(self, cfig_path='auto', download_source=None, data_dir=None):
 
-        manager_path = os.path.dirname(os.path.realpath(__file__))
+        if data_dir:
+            manager_path = data_dir
+        else:
+            manager_path = os.path.dirname(os.path.realpath(__file__))
         if cfig_path == 'auto':
-            cfig_path = manager_path + "/data/config.ini"
+            
+        cfig_path = manager_path + "/data/config.ini"
         parser = configparser.ConfigParser()
-        parser.read(cfig_path)
+        parser.read(cfig_path.replace(".ini", ".draft.ini"))
 
         self.manager_path = manager_path
         self.cfig_path = Path(cfig_path)
         self.parser = parser
-
-    @staticmethod
+        self.download_source = download_source
+    @staticmethod    
     def write_config(cfig_path, parser):
 
         print("Writing config file")
@@ -232,6 +236,42 @@ class BroadDepMap(Manager):
 
         formatted[path.split("/")[-1]] = path
 
+
+    def download_reformatted_data(self, depmap_release=''):
+        if not os.path.exists(self.manager_path + '/data/'):
+            os.makedirs(self.manager_path + '/data/')
+
+        if not os.path.exists(self.manager_path + '/data/depmap/'):
+            os.makedirs(self.manager_path + '/data/depmap/')
+
+        if self.download_source == "dataverse":
+            urls, file_names = depmap_dataverse_download(
+                self.manager_path + '/data/depmap/', 
+                return_type= ["url", "name"]
+            )
+
+            depmap_urls = {
+                file: url for url, file in zip(urls, file_names)
+            }
+
+            depmap_files = {}
+            for file in file_names:
+                f_key = file.split('.')[0]
+                f_key = f_key.replace('CCLE_','')
+                f_key = f_key.replace('CRISPR_','')
+                depmap_files[f_key] = file 
+
+            formatted = {
+                f'{self.manager_path}/data/depmap/{file}': file for file in file_names 
+                if 'readme' not in file.lower()
+            }
+
+            self.parser["depmap_urls"] = depmap_urls
+            self.parser["depmap_files"] = depmap_files
+            self.parser["formatted"] = formatted
+
+        else:
+            raise RuntimeError("Set download source to 'dataverse' before running download_formated_data")
 
 class SangerDepMap(Manager):
     def __init__(self, cfig_path='auto'):

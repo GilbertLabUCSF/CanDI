@@ -1,7 +1,7 @@
 import os
 import configparser
 import json
-from manager import Manager
+from .manager import Manager
 
 
 def write_cfig(cfig_path, parser):

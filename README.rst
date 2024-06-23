@@ -3,24 +3,24 @@ CanDI - A global cancer data integrator
 
 |Documentation Status|
 |DOI|
+|Dataverse|
 
 Package Installation
 --------------------
 
-First, you need to clone this repository to use CanDI.
+CanDI is now available on `PyPI <https://pypi.org/project/PyCanDI/>`_ and can be installed with pip:
 
 .. code:: bash
 
-   git clone https://github.com/GilbertLabUCSF/CanDI.git
+   pip install PyCanDI
 
-We suggest to use `Conda <https://docs.conda.io/en/latest/>`__ as a
-package manager and environment management system. You can create a
-fresh conda environment with all ``CanDI``\ ’s requirements using bellow
-command:
+___
+For the latest version (development version) install from GitHub:
 
 .. code:: bash
+   
+   pip install git+https://github.com/GilbertLabUCSF/CanDI.git
 
-   conda env create -f CanDI/candi.yml -n candi
 
 Prepare Datasets
 ~~~~~~~~~~~~~~~~
@@ -58,19 +58,7 @@ Package Usage
 Import CanDI into python
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-To import ``CanDI``, your active directory in python must be same as the
-cloned folder.
-
 .. code:: python
-
-   from CanDI import candi
-
-**OR**, you can add path to the `CanDI` directory if you want to use it from other directories.
-
-.. code:: python
-
-   import sys
-   sys.path.append("path-to-candi-directory")
 
    from CanDI import candi
 
@@ -96,3 +84,6 @@ CanDI Objects
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.1186/s13073-021-00987-8.svg
    :target: https://doi.org/10.1186/s13073-021-00987-8
+
+.. |Dataverse| image:: https://img.shields.io/badge/Dataverse-10.7910/DVN/JIAT0H-red
+  :target: https://doi.org/10.7910/DVN/JIAT0H

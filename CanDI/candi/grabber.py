@@ -1,6 +1,6 @@
 import numpy as np
 from pathlib import Path
-from CanDI.candi import data
+from . import data
 
 class Grabber:
     """"Grabber class handles all bulk data retrival from the CanDI Classes.
