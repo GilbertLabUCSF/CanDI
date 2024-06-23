@@ -1,21 +1,22 @@
 import argparse
-from .manager import Manager
+from manager import DataverseDepMap, BroadDepMap
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", help="Specify the download source", default="dataverse")
-    parser.add_argument("--data_dir", help="Specify the data directory", default=None)
+    parser.add_argument("--data_dir", help="Specify the data directory", default='auto')
     args = parser.parse_args()
 
     if args.source == 'dataverse':
         print("Downloading data from Dataverse")
-        m = Manager(download_source=args.source, data_dir=args.data_dir)
+        m = DataverseDepMap(manager_path=args.data_dir, verbose=True)
         m.download_reformatted_data()
         m.write_config(m.cfig_path, m.parser)
     
     elif args.source == 'depmap':        
         print("Downloading data from DepMap")
-        m = Manager(download_source=args.source, data_dir=args.data_dir)
+        m = BroadDepMap(manager_path=args.data_dir, verbose=True)
         m.get_depmap_info()
         m.write_config(m.cfig_path, m.parser)
         m.download_defaults()
