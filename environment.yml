@@ -11,4 +11,3 @@ dependencies:
  - pip:
    - pydeseq2
    - adpbulk
-   - pytdc
