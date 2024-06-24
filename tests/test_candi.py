@@ -2,6 +2,7 @@ import unittest
 import pandas as pd
 import numpy as np
 from CanDI.structures.entity import Entity 
+from CanDI.setup.manager import Manager
 
 
 class testEntity(unittest.TestCase):
@@ -92,5 +93,6 @@ class testEntity(unittest.TestCase):
         self.assertIsInstance(over, pd.core.frame.DataFrame)
         self.assertIsInstance(under, pd.core.frame.DataFrame)
 
-
-
+class testManager(unittest.TestCase):
+    #TODO: Implement tests for Manager class
+    pass
