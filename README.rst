@@ -1,7 +1,7 @@
 CanDI - A global cancer data integrator
 =======================================
 
-|PyPI| |Documentation Status| |DOI| |Dataverse|
+|PyPI| |Downloads| |Documentation Status| |DOI| |Dataverse|
 
 Installation
 ------------
@@ -88,6 +88,9 @@ If you use CanDI in your research, please cite the following paper:
    
 .. |Documentation Status| image:: https://readthedocs.org/projects/candi/badge/?version=latest
    :target: https://candi.readthedocs.io/en/latest/?badge=latest
+
+.. |Downloads| image:: https://static.pepy.tech/badge/pycandi
+   :target: https://pepy.tech/project/pycandi
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.1186/s13073-021-00987-8.svg
    :target: https://doi.org/10.1186/s13073-021-00987-8
