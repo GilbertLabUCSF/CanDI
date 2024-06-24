@@ -9,11 +9,13 @@ import configparser
 import json
 import time
 import requests
+import numpy as np
+import polars as pl
 import pandas as pd
 from time import sleep
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from .dataverse import depmap_dataverse_download, CANDI_DATAVERSE_DOI
+from . import dataverse
 
 
 class Manager(object):
@@ -58,7 +60,7 @@ class DataverseDepMap(Manager):
     def __init__(self, manager_path='auto', cfig_path='auto', verbose=False):
         super().__init__(manager_path, cfig_path, verbose)
         self.release = '21Q4' # default release uploded to CanDI dataverse
-        self.download_source = 'dataverse, ' + CANDI_DATAVERSE_DOI
+        self.download_source = 'dataverse, ' + dataverse.CANDI_DATAVERSE_DOI
     
     def download_reformatted_data(self):
         if not os.path.exists(self.manager_path + '/data/'):
@@ -67,7 +69,8 @@ class DataverseDepMap(Manager):
         if not os.path.exists(self.manager_path + '/data/depmap/'):
             os.makedirs(self.manager_path + '/data/depmap/')
 
-        urls, file_names = depmap_dataverse_download(
+        session = dataverse.DepMapDownloader()
+        urls, file_names = session.download(
             self.manager_path + '/data/depmap/', 
             return_type= ["url", "name"]
         )
@@ -304,3 +307,84 @@ class SangerDepMap(Manager):
 
     def sanger_download():
         pass
+
+
+class DataverseCoessentiality(Manager):
+    def __init__(self, manager_path='auto', cfig_path='auto', verbose=False):
+        super().__init__(manager_path, cfig_path, verbose)
+        self.download_source = 'Dataverse'
+        self.reference = 'https://github.com/kundajelab/coessentiality'
+        self.verbose = verbose
+    
+    def download_raw_files(self):
+        if not os.path.exists(self.manager_path + '/data/'):
+            os.makedirs(self.manager_path + '/data/')
+
+        if not os.path.exists(self.manager_path + '/data/coessentiality/'):
+            os.makedirs(self.manager_path + '/data/coessentiality/')
+        
+        session = dataverse.CoessentialityDownloader()
+        urls, file_names = session.download(
+            self.manager_path + '/data/coessentiality/',
+            return_type= ["url", "name"]
+        )
+
+        self.urls = urls
+        self.file_names = file_names
+
+    def _load_coessentiality_matrix(self):
+        data_dir = f'{self.manager_path}/data/coessentiality'
+
+        gene_names = pd.read_csv(
+            f'{data_dir}/genes.txt',header=None,names=['gene_name']
+        )['gene_name']
+        
+        GLS_sign = np.load(f'{data_dir}/GLS_sign.npy')
+        GLS_p = np.load(f'{data_dir}/GLS_p.npy')
+        
+        self.matrix = pl.from_dataframe(
+            pd.DataFrame((-1*np.log10(GLS_p)) * GLS_sign, columns = gene_names, index = gene_names).reset_index()
+        )
+
+    def _get_coessentiality_df(self, pvalue_threshold = 10**-3):
+        df = self.matrix.melt('gene_name')
+        df.columns = ['gene_1','gene_2','coessentiality']
+        df = df.filter(~(pl.col('gene_1') == pl.col('gene_2')))
+        df = df.filter(pl.col('coessentiality') > -np.log10(pvalue_threshold))
+        
+        self.df = df
+        self.pvalue_threshold = pvalue_threshold
+
+    def coessentiality_autoformat(self):
+
+        if self.verbose: print("Building Coessentiality Matrix ...", end=' ')
+        self._load_coessentiality_matrix()
+        self.matrix.to_pandas().to_csv(
+            f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv'
+        )
+        if self.verbose: print("Done!")
+        
+        if self.verbose: print("Building Coessentiality DataFrame ...", end=' ')
+        self._get_coessentiality_df()
+        self.df.to_pandas().to_csv(
+            f'{self.manager_path}/data/coessentiality/coessentiality_df.csv'
+        )
+        if self.verbose: print("Done!")
+        
+        self.parser['data_paths'] = {    
+            'coessentiality': 'data/coessentiality/'
+        }
+
+        self.parser['formatted'] = {    
+            'coessentiality_matrix.csv': f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv',
+            'coessentiality_df.csv': f'{self.manager_path}/data/coessentiality/coessentiality_df.csv'
+        }
+        
+        self.parser['depmap_files'] = {
+            'coessentiality': f'{self.manager_path}/data/coessentiality/coessentiality_df.csv',
+            'coessentiality_matrix': f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv',
+            # 'coessentiality_signs': f'{self.manager_path}/data/coessentiality/GLS_sign.npy',
+            # 'coessentiality_pvalues': f'{self.manager_path}/data/coessentiality/GLS_p.npy',
+            # 'gene_names': f'{self.manager_path}/data/coessentiality/genes.txt',
+            # 'pvalue_threshold': self.pvalue_threshold,
+        }
