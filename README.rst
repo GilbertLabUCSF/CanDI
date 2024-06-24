@@ -77,9 +77,11 @@ Citation
 
 If you use CanDI in your research, please cite the following paper:
 
-Yogodzinski C, Arab A, Pritchard JR, Goodarzi H, Gilbert LA. 
-A global cancer data integrator reveals principles of synthetic lethality, sex disparity and immunotherapy. 
-Genome Med. 2021;13(1):167. Published 2021 Oct 18. doi:10.1186/s13073-021-00987-8
+.. code:: bibtex
+
+   Yogodzinski C, Arab A, Pritchard JR, Goodarzi H, Gilbert LA. 
+   A global cancer data integrator reveals principles of synthetic lethality, sex disparity and immunotherapy. 
+   Genome Med. 2021;13(1):167. Published 2021 Oct 18. doi:10.1186/s13073-021-00987-8
 
 
 
