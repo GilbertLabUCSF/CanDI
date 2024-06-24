@@ -42,7 +42,7 @@ Downloaded and formatted datasets would organize this way:
 
 .. note::
    Currently, DepMap API is not available for public use. Therefore, we are providing the preprocessed datasets for the users
-   based on DepMap 21Q4 release. DepMap API will be available in the future to download the latest datasets.
+      based on DepMap 21Q4 release. DepMap API will be available in the future to download the latest datasets.
 
 
 Package Usage
