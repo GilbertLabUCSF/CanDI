@@ -5,8 +5,10 @@ CanDI/setup/data/coessentiality
 
 *.swp
 tests.py
+build
 
 **/__pycache__/
 **/.ipynb_checkpoints/
 **.pyc
 *.DS_store
+*.egg-info
