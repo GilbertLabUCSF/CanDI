@@ -5,32 +5,19 @@ CanDI - A global cancer data integrator
 |DOI|
 |Dataverse|
 
-Package Installation
---------------------
+Installation
+------------
 
-CanDI is now available on `PyPI <https://pypi.org/project/PyCanDI/>`_ and can be installed with pip:
+CanDI is now available on `PyPI <https://pypi.org/project/PyCanDI/>`_ and can be installed with pip. 
+Then, a command from CanDI will automatically download stable datasets from `Dataverse <https://doi.org/10.7910/DVN/JIAT0H>`_.
 
 .. code:: bash
 
+   # Package Installation
    pip install PyCanDI
 
-___
-For the latest version (development version) install from GitHub:
-
-.. code:: bash
-   
-   pip install git+https://github.com/GilbertLabUCSF/CanDI.git
-
-
-Prepare Datasets
-~~~~~~~~~~~~~~~~
-
-The python command from CanDI will automatically download and modify
-datasets.
-
-.. code:: bash
-
-   python CanDI/CanDI/setup/install.py
+   # Prepare Datasets
+   candi-install
 
 Downloaded and formatted datasets would organize this way:
 
@@ -51,6 +38,11 @@ Downloaded and formatted datasets would organize this way:
    │   └── gene_info.csv
    └── locations
        └── merged_locations.csv
+
+___
+
+Note: Currently, DepMap API is not available for public use. Therefore, we are providing the preprocessed datasets for the users
+based on DepMap 21Q4 release. DepMap API will be available in the future to download the latest datasets.
 
 Package Usage
 -------------
