@@ -1,11 +1,11 @@
 # Classes for handling data aggregations
 import operator
-from collections import OrderedDict, MutableSequence
+from collections.abc import MutableSequence
 import itertools as it
 import pandas as pd
 import numpy as np
 from . import data, grabber
-from . import entity
+from ..structures import entity
 
 class SubsetHandler(object):
 

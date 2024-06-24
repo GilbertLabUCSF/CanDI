@@ -1,7 +1,13 @@
 name: candi
 dependencies:
- - python==3.9
+ - python>=3.11,<4.0
  - pandas
+ - numpy
+ - polars
  - configparser
  - requests
  - tqdm
+ - pip
+ - pip:
+   - pydeseq2
+   - adpbulk

@@ -1,5 +1,9 @@
 pandas
+numpy
+polars
+anndata
 configparser
 requests
 tqdm
-
+adpbulk
+pydeseq2

@@ -14,21 +14,27 @@ class Data(object):
     can be tuned to load specific datasets upon import by editing config.ini
     can call Data.load() to load any specific dataset
     """
-    def __init__(self):
+    def __init__(self, config_path='auto', verbose=False):
 
-        self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
-        config_path = self._file_path / 'data/config.ini'
+        if config_path == 'auto':
+            self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
+            config_path = self._file_path / 'data/config.ini'
+        elif os.path.exists(config_path) == False:
+            raise FileNotFoundError("Config file not found at {}".format(config_path))
+        elif os.path.exists(config_path) == True:
+            if verbose: print("Using config file at {}".format(config_path))
 
         parser = configparser.ConfigParser() #parses config for data sources
         parser.read(config_path)
 
         self._parser = parser
-        #self._verify_install()
+        self._verify_install()
         self._init_sources()
         self._init_depmap_paths()
-        # self._init_index_tables()
+        self._init_index_tables()
 
     def _verify_install(self): #ensures data being loaded is present
+        #TODO: add more checks for different data sources
         try:
             assert "depmap_urls" in self._parser.sections()
         except AssertionError:
@@ -91,6 +97,7 @@ class Data(object):
             df = pd.read_csv(path,
                              memory_map=True,
                              low_memory=False,
+                             sep='\t',
                              index_col="DepMap_ID")
 
         elif method == "locations":

@@ -1,36 +1,21 @@
 CanDI - A global cancer data integrator
 =======================================
 
-|Documentation Status|
-|DOI|
-|Dataverse|
+|PyPI| |Downloads| |Documentation Status| |DOI| |Dataverse|
 
-Package Installation
---------------------
+Installation
+------------
 
-CanDI is now available on `PyPI <https://pypi.org/project/PyCanDI/>`_ and can be installed with pip:
+CanDI is now available on `PyPI <https://pypi.org/project/PyCanDI/>`_ and can be installed with pip. 
+Then, a command from CanDI will automatically download stable datasets from `Dataverse <https://doi.org/10.7910/DVN/JIAT0H>`_.
 
 .. code:: bash
 
+   # Package Installation
    pip install PyCanDI
 
-___
-For the latest version (development version) install from GitHub:
-
-.. code:: bash
-   
-   pip install git+https://github.com/GilbertLabUCSF/CanDI.git
-
-
-Prepare Datasets
-~~~~~~~~~~~~~~~~
-
-The python command from CanDI will automatically download and modify
-datasets.
-
-.. code:: bash
-
-   python CanDI/CanDI/setup/install.py
+   # Prepare Datasets
+   candi-install
 
 Downloaded and formatted datasets would organize this way:
 
@@ -52,7 +37,13 @@ Downloaded and formatted datasets would organize this way:
    └── locations
        └── merged_locations.csv
 
-Package Usage
+
+**Note**:
+   *Currently, DepMap API is not available for public use. Therefore, we are providing the preprocessed datasets for the users
+   based on DepMap 21Q4 release. DepMap API will be available in the future to download the latest datasets.*
+
+
+Usage
 -------------
 
 Import CanDI into python
@@ -79,8 +70,27 @@ CanDI Objects
 -  ``GeneCluster`` : Provides cross dataset indexing for a group of user
    defined genes.
 
+Citation
+--------
+
+If you use CanDI in your research, please cite the following paper:
+
+.. code:: bibtex
+
+   Yogodzinski C, Arab A, Pritchard JR, Goodarzi H, Gilbert LA. 
+   A global cancer data integrator reveals principles of synthetic lethality, sex disparity and immunotherapy. 
+   Genome Med. 2021;13(1):167. Published 2021 Oct 18. doi:10.1186/s13073-021-00987-8
+
+
+
+.. |PyPI| image:: https://img.shields.io/pypi/v/PyCanDI
+   :target: https://pypi.org/project/PyCanDI/
+   
 .. |Documentation Status| image:: https://readthedocs.org/projects/candi/badge/?version=latest
    :target: https://candi.readthedocs.io/en/latest/?badge=latest
+
+.. |Downloads| image:: https://static.pepy.tech/badge/pycandi
+   :target: https://pepy.tech/project/pycandi
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.1186/s13073-021-00987-8.svg
    :target: https://doi.org/10.1186/s13073-021-00987-8

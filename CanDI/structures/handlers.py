@@ -1,8 +1,9 @@
 import operator
 import pandas as pd
 import numpy as np
-import collections
+from collections.abc import Iterable
 import six
+
 
 class BinaryFilter:
     """BinaryFilter class filters datasets based on a specific threshold.
@@ -146,7 +147,7 @@ class MutationHandler(object):
         assert item in mut_dat[variant].unique(), "{0} not found, options are: {1}".format(item, mut_dat[variant].unique())
 
 
-        if isinstance(item, collections.Iterable) and not isinstance(item, six.string_types):
+        if isinstance(item, Iterable) and not isinstance(item, six.string_types):
             method = lambda x,y: mut_dat.loc[mut_dat[x].isin(y)]
 
         else:
