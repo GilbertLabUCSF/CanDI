@@ -97,6 +97,7 @@ class Data(object):
             df = pd.read_csv(path,
                              memory_map=True,
                              low_memory=False,
+                             on_bad_lines='warn',
                              index_col="DepMap_ID")
 
         elif method == "locations":
