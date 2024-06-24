@@ -12,3 +12,4 @@ build
 **.pyc
 *.DS_store
 *.egg-info
+*.eggs
