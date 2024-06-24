@@ -88,9 +88,17 @@ class DataverseDepMap(Manager):
             if 'readme' not in file.lower()
         }
 
+        data_paths = {
+            'depmap':   'data/depmap/',
+            'genes':    'data/genes/',
+            'corum':    'data/complexes/',
+            'location': 'data/location/'
+        }
+        
         self.parser["depmap_urls"] = depmap_urls
         self.parser["depmap_files"] = depmap_files
         self.parser["formatted"] = formatted
+        self.parser["data_paths"] = data_paths
 
 
 class BroadDepMap(Manager):
