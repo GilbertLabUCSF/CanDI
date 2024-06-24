@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import argparse
 from .manager import Manager
@@ -11,16 +12,22 @@ def main():
     args = parser.parse_args()
 
     if args.database == 'depmap':
-        print("Uninstalling DepMap data")
+        print("Uninstalling CanDI: removing DepMap data")
 
         m = Manager()
 
         if args.directory == 'auto':
-            shutil.rmtree(m.manager_path + "/data/depmap/")
+            depmap_path = m.manager_path + "/data/depmap/"
         elif os.path.exists(args.directory):
-            shutil.rmtree(m.manager_path + "/data/depmap/")
+            depmap_path = args.directory + "/data/depmap/"
         else:
-            raise ValueError("Invalid data directory")
+            sys.exit("Exit: Invalid directory path!")
+
+        if not os.path.exists(depmap_path):
+            sys.exit("Exit: Directory does not contain DepMap data")
+        else:
+            os.listdir(depmap_path)
+            shutil.rmtree(depmap_path)
     else:
         raise ValueError("Invalid database. Currently only 'depmap' is supported")
     
