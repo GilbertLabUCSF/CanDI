@@ -5,18 +5,18 @@ from .manager import DataverseDepMap, BroadDepMap
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", help="Specify the download source", default="dataverse")
-    parser.add_argument("--data_dir", help="Specify the data directory", default='auto')
+    parser.add_argument("--directory", help="Specify the parent data directory", default='auto')
     args = parser.parse_args()
 
     if args.source == 'dataverse':
         print("Downloading data from Dataverse")
-        m = DataverseDepMap(manager_path=args.data_dir, verbose=True)
+        m = DataverseDepMap(manager_path=args.directory, verbose=True)
         m.download_reformatted_data()
         m.write_config(m.cfig_path, m.parser)
     
     elif args.source == 'depmap':        
         print("Downloading data from DepMap")
-        m = BroadDepMap(manager_path=args.data_dir, verbose=True)
+        m = BroadDepMap(manager_path=args.directory, verbose=True)
         m.get_depmap_info()
         m.write_config(m.cfig_path, m.parser)
         m.download_defaults()
