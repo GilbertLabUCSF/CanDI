@@ -39,7 +39,7 @@ class Manager(object):
             print(f"Config Path: {cfig_path}")
 
         parser = configparser.ConfigParser()
-        parser.read(cfig_path.replace(".ini", ".draft.ini"))
+        parser.read(cfig_path) #.replace(".ini", ".draft.ini"))
 
         self.manager_path = manager_path
         self.cfig_path = Path(cfig_path)

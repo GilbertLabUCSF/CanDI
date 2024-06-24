@@ -1,5 +1,5 @@
 import argparse
-from .manager import DataverseDepMap, BroadDepMap
+from manager import DataverseDepMap, BroadDepMap
 
 
 def main():
