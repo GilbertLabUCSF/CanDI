@@ -13,7 +13,7 @@ setup(
     packages=find_packages(),
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    python_requires='>=3.9',
+    python_requires='>=3.11,<4.0',
     install_requires=[
         "pandas",
         "configparser",
