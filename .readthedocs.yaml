@@ -7,10 +7,12 @@ build:
   os: ubuntu-22.04
   tools:
     python: "mambaforge-4.10"
-
+  
 conda:
   environment: docs/environment.yaml
 
-# run a bash command before building the docs
-ansible.builtin.command:
-  args: candi-install
+build:
+  steps:
+  - name: Install CanDI (i.e. download required datasets)
+    run: |
+      candi-install
