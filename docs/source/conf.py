@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'CanDI'
-copyright = '2021-2023 – Gilbert Lab UCSF'
+copyright = '2021-2024 – Gilbert Lab UCSF'
 author = 'Chris Yogodzinski, Abolfazl Arab'
 
 
