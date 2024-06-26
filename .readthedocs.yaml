@@ -11,4 +11,6 @@ build:
 conda:
   environment: docs/environment.yaml
 
+# run a bash command before building the docs
+ansible.builtin.command:
   cmd: candi-install
