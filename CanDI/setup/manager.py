@@ -34,14 +34,17 @@ class Manager(object):
                 os.makedirs(manager_path)
 
         if cfig_path == 'auto':
-            cfig_path = manager_path + "/data/config.ini"
+            if not os.path.exists(manager_path + "/data/config.ini"):
+                cfig_path = manager_path + "/data/config.draft.ini"
+            else:
+                cfig_path = manager_path + "/data/config.ini"
 
         if verbose:
             print(f"Manager Path: {manager_path}")
             print(f"Config Path: {cfig_path}")
 
         parser = configparser.ConfigParser()
-        parser.read(cfig_path.replace(".ini", ".draft.ini"))
+        parser.read(cfig_path)
 
         self.manager_path = manager_path
         self.cfig_path = Path(cfig_path)
@@ -363,7 +366,6 @@ class DataverseCoessentiality(Manager):
         # Check if the data has already been formatted or run the formatting
         if os.path.exists(coessentiality_matrix_path):
             if self.verbose: print("coessentiality_matrix.csv already exists")
-            self.matrix = pl.read_csv(coessentiality_matrix_path)
         
         else:
             if self.verbose: print("Building Coessentiality Matrix ...", end=' ')
@@ -373,7 +375,6 @@ class DataverseCoessentiality(Manager):
         
         if os.path.exists(coessentiality_df_path):
             if self.verbose: print("coessentiality_df.csv already exists")
-            self.df = pl.read_csv(coessentiality_df_path)
         
         else:
             if self.verbose: print("Building Coessentiality DataFrame ...", end=' ')
