@@ -8,6 +8,8 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import sys
+import subprocess
+
 
 class Data(object):
     """Class data is used for loading and caching data
@@ -42,7 +44,8 @@ class Data(object):
         try:
             assert "depmap_urls" in self._parser.sections()
         except AssertionError:
-            raise RuntimeError("CanDI has not been properly installed. Please run CanDI/setup/install.py prior to import")
+            print("CanDI has not been properly installed. ...")
+            subprocess.run('candi-install', shell=True)
 
     def _init_sources(self):
         """this function creates paths
