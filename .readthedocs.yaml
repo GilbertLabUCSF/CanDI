@@ -4,15 +4,10 @@ sphinx:
   configuration: docs/source/conf.py
 
 build:
-  os: "ubuntu-20.04"
+  os: "ubuntu-22.04"
   tools:
-    python: "mambaforge-4.10"
+    python: "mambaforge-22.9"
   
-conda:
-  environment: docs/environment.yaml
-
-build:
-  steps:
-  - name: Install CanDI (i.e. download required datasets)
-    run: |
-      candi-install
+  commands:
+    - conda create -f docs/environment.yaml
+    - candi-install
