@@ -3,13 +3,19 @@ channels:
   - anaconda
   - conda-forge
 dependencies:
+  - python>=3.11,<4.0
   - myst-parser=0.18.1
   - sphinx=5.3.0
   - sphinx_rtd_theme=1.1.1
   - jinja2<=3.1
   - pandas
+  - numpy
   - polars
+  - configparser
+  - requests
+  - tqdm
   - pip
   - pip:
-    - nbsphinx
-    - pycandi
+   - pydeseq2
+   - adpbulk
+   - pycandi
