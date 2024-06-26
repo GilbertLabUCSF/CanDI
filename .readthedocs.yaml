@@ -10,4 +10,5 @@ build:
   
   commands:
     - conda env create -f docs/environment.yaml
+    - conda activate docs
     - candi-install
