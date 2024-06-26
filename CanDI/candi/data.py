@@ -18,7 +18,11 @@ class Data(object):
 
         if config_path == 'auto':
             self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
-            config_path = self._file_path / 'data/config.ini'
+            if os.path.exists(self._file_path / 'data/config.ini'):
+                config_path = self._file_path / 'data/config.ini'
+            else:
+                config_path = self._file_path / 'data/config.draft.ini'
+        
         elif os.path.exists(config_path) == False:
             raise FileNotFoundError("Config file not found at {}".format(config_path))
         elif os.path.exists(config_path) == True:
@@ -28,8 +32,8 @@ class Data(object):
         parser.read(config_path)
 
         self._parser = parser
-        # self._verify_install()
-        # self._init_sources()
+        self._verify_install()
+        self._init_sources()
         self._init_depmap_paths()
         self._init_index_tables()
 
