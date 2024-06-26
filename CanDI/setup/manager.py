@@ -371,20 +371,20 @@ class DataverseCoessentiality(Manager):
         )
         if self.verbose: print("Done!")
         
-        self.parser['data_paths'] = {    
+        self.parser['data_paths'].update({
             'coessentiality': 'data/coessentiality/'
-        }
+        })
 
-        self.parser['formatted'] = {    
+        self.parser['formatted'].update({
             'coessentiality_matrix.csv': f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv',
             'coessentiality_df.csv': f'{self.manager_path}/data/coessentiality/coessentiality_df.csv'
-        }
+        })
         
-        self.parser['depmap_files'] = {
+        self.parser['depmap_files'].update({
             'coessentiality': f'{self.manager_path}/data/coessentiality/coessentiality_df.csv',
             'coessentiality_matrix': f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv',
             # 'coessentiality_signs': f'{self.manager_path}/data/coessentiality/GLS_sign.npy',
             # 'coessentiality_pvalues': f'{self.manager_path}/data/coessentiality/GLS_p.npy',
             # 'gene_names': f'{self.manager_path}/data/coessentiality/genes.txt',
             # 'pvalue_threshold': self.pvalue_threshold,
-        }
+        })
