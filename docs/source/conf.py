@@ -30,7 +30,14 @@ author = 'Chris Yogodzinski, Abolfazl Arab'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'nbsphinx', 'myst_parser']
+extensions = [
+    "sphinx.ext.napoleon",
+    'sphinx.ext.autodoc', 
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode', 
+    'nbsphinx', 
+    'myst_parser'
+]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
