@@ -7,8 +7,6 @@ build:
   os: "ubuntu-22.04"
   tools:
     python: "mambaforge-22.9"
-  after:
-    - candi-install
 
 conda:
   environment: environment.yml
