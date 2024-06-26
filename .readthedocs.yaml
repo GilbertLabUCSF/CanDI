@@ -9,7 +9,7 @@ build:
     python: "mambaforge-22.9"
   
   commands:
-    - conda env create -f docs/environment.yaml
     - conda init bash
+    - conda env create -f docs/environment.yaml
     - conda activate docs
     - candi-install
