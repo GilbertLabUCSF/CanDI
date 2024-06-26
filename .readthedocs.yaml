@@ -13,4 +13,4 @@ conda:
 
 # run a bash command before building the docs
 ansible.builtin.command:
-  cmd: candi-install
+  args: candi-install
