@@ -11,10 +11,4 @@ build:
 conda:
   environment: docs/environment.yaml
 
-  jobs:
-    pre_create_environment:
-      - echo "Command run at 'pre_create_environment' step"
-      - candi-install
-    post_build:
-      - echo "Command run at 'post_build' step"
-      - echo `date`
+  cmd: candi-install
