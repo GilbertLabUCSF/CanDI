@@ -7,10 +7,9 @@ build:
   os: "ubuntu-22.04"
   tools:
     python: "mambaforge-22.9"
-
-conda:
-  environment: environment.yml
   
-build:
   commands:
+    - conda env create -f docs/environment.yaml
+    - conda init bash
+    - conda activate docs
     - candi-install
