@@ -16,6 +16,6 @@ dependencies:
   - tqdm
   - pip
   - pip:
-   - pydeseq2
-   - adpbulk
-   - pycandi
+    - pydeseq2
+    - adpbulk
+    - pycandi
