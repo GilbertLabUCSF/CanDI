@@ -8,6 +8,8 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import sys
+import subprocess
+
 
 class Data(object):
     """Class data is used for loading and caching data
@@ -18,7 +20,11 @@ class Data(object):
 
         if config_path == 'auto':
             self._file_path = Path(os.path.dirname(os.path.realpath(__file__))).parent.absolute() / 'setup'
-            config_path = self._file_path / 'data/config.ini'
+            if os.path.exists(self._file_path / 'data/config.ini'):
+                config_path = self._file_path / 'data/config.ini'
+            else:
+                config_path = self._file_path / 'data/config.draft.ini'
+        
         elif os.path.exists(config_path) == False:
             raise FileNotFoundError("Config file not found at {}".format(config_path))
         elif os.path.exists(config_path) == True:
@@ -30,7 +36,7 @@ class Data(object):
         self._parser = parser
         self._verify_install()
         self._init_sources()
-        self._init_depmap_paths()
+        # self._init_depmap_paths()
         self._init_index_tables()
 
     def _verify_install(self): #ensures data being loaded is present
@@ -38,7 +44,8 @@ class Data(object):
         try:
             assert "depmap_urls" in self._parser.sections()
         except AssertionError:
-            raise RuntimeError("CanDI has not been properly installed. Please run CanDI/setup/install.py prior to import")
+            print("CanDI has not been properly installed. ...")
+            subprocess.run('candi-install', shell=True)
 
     def _init_sources(self):
         """this function creates paths

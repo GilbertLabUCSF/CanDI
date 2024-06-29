@@ -34,14 +34,17 @@ class Manager(object):
                 os.makedirs(manager_path)
 
         if cfig_path == 'auto':
-            cfig_path = manager_path + "/data/config.ini"
+            if not os.path.exists(manager_path + "/data/config.ini"):
+                cfig_path = manager_path + "/data/config.draft.ini"
+            else:
+                cfig_path = manager_path + "/data/config.ini"
 
         if verbose:
             print(f"Manager Path: {manager_path}")
             print(f"Config Path: {cfig_path}")
 
         parser = configparser.ConfigParser()
-        parser.read(cfig_path.replace(".ini", ".draft.ini"))
+        parser.read(cfig_path)
 
         self.manager_path = manager_path
         self.cfig_path = Path(cfig_path)
@@ -356,35 +359,40 @@ class DataverseCoessentiality(Manager):
         self.pvalue_threshold = pvalue_threshold
 
     def coessentiality_autoformat(self):
+        
+        coessentiality_matrix_path = f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv'
+        coessentiality_df_path = f'{self.manager_path}/data/coessentiality/coessentiality_df.csv'
 
-        if self.verbose: print("Building Coessentiality Matrix ...", end=' ')
-        self._load_coessentiality_matrix()
-        self.matrix.to_pandas().to_csv(
-            f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv'
-        )
-        if self.verbose: print("Done!")
+        # Check if the data has already been formatted or run the formatting
+        if os.path.exists(coessentiality_matrix_path):
+            if self.verbose: print("coessentiality_matrix.csv already exists")
         
-        if self.verbose: print("Building Coessentiality DataFrame ...", end=' ')
-        self._get_coessentiality_df()
-        self.df.to_pandas().to_csv(
-            f'{self.manager_path}/data/coessentiality/coessentiality_df.csv'
-        )
-        if self.verbose: print("Done!")
+        else:
+            if self.verbose: print("Building Coessentiality Matrix ...", end=' ')
+            self._load_coessentiality_matrix()
+            self.matrix.to_pandas().to_csv(coessentiality_matrix_path)
+            if self.verbose: print("Done!")
         
-        self.parser['data_paths'] = {    
+        if os.path.exists(coessentiality_df_path):
+            if self.verbose: print("coessentiality_df.csv already exists")
+        
+        else:
+            if self.verbose: print("Building Coessentiality DataFrame ...", end=' ')
+            self._get_coessentiality_df()
+            self.df.to_pandas().to_csv(coessentiality_df_path)
+            if self.verbose: print("Done!")
+        
+        # Update the config file
+        self.parser['data_paths'].update({
             'coessentiality': 'data/coessentiality/'
-        }
+        })
 
-        self.parser['formatted'] = {    
-            'coessentiality_matrix.csv': f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv',
-            'coessentiality_df.csv': f'{self.manager_path}/data/coessentiality/coessentiality_df.csv'
-        }
+        self.parser['formatted'].update({
+            'coessentiality_matrix.csv': coessentiality_matrix_path,
+            'coessentiality_df.csv': coessentiality_df_path
+        })
         
-        self.parser['depmap_files'] = {
-            'coessentiality': f'{self.manager_path}/data/coessentiality/coessentiality_df.csv',
-            'coessentiality_matrix': f'{self.manager_path}/data/coessentiality/coessentiality_matrix.csv',
-            # 'coessentiality_signs': f'{self.manager_path}/data/coessentiality/GLS_sign.npy',
-            # 'coessentiality_pvalues': f'{self.manager_path}/data/coessentiality/GLS_p.npy',
-            # 'gene_names': f'{self.manager_path}/data/coessentiality/genes.txt',
-            # 'pvalue_threshold': self.pvalue_threshold,
-        }
+        self.parser['depmap_files'].update({
+            'coessentiality': coessentiality_df_path,
+            'coessentiality_matrix': coessentiality_matrix_path,
+        })
