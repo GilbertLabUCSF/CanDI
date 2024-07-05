@@ -73,20 +73,19 @@ CanDI Objects
 Demos
 ~~~~~
 
-.. list-table:: Title
+.. list-table::
    :widths: 25 50
    :header-rows: 1
 
    * - Name
      - Description
-   
-   * - [Getting Started](docs/source/get-started.ipynb)
+   * - `Getting Started <docs/source/get-started.ipynb>`_
      - ...
-   * - [*BRCA* Heatmap](docs/source/brca_heatmap.ipynb)
+   * - `*BRCA* Heatmap <docs/source/brca_heatmap.ipynb>`_
      - ...
-   * - [*KRAS* and *EGFR* Scatter plot](docs/source/kras_egfr_scatter.ipynb)
+   * - `*KRAS* and *EGFR* Scatter plot <docs/source/kras_egfr_scatter.ipynb>`_
      - ...
-   * - [CanDI and DESeq2](docs/source/deseq_setup.ipynb)
+   * - `CanDI and DESeq2 <docs/source/deseq_setup.ipynb>`_
      - ...
 
 
