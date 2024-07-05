@@ -70,6 +70,22 @@ CanDI Objects
 -  ``GeneCluster`` : Provides cross dataset indexing for a group of user
    defined genes.
 
+Demos
+~~~~~
+   
++-----------------------------+----------------------------------------------------+
+| Name                        | Description                                        |
++=============================+====================================================+
+| [Getting Started](docs/source/get-started.ipynb)         | ... |
++-----------------------------+----------------------------------------------------+
+| [*BRCA* Heatmap](docs/source/brca_heatmap.ipynb)          | ... |
++-----------------------------+----------------------------------------------------+
+| [*KRAS* and *EGFR* Scatter plot](docs/source/kras_egfr_scatter.ipynb) | ... |
++-----------------------------+----------------------------------------------------+
+| [CanDI and DESeq2](docs/source/deseq_setup.ipynb)       | ... |
++-----------------------------+----------------------------------------------------+
+
+
 Citation
 --------
 
