@@ -3,7 +3,6 @@ myst-parser=0.18.1
 myst-nb
 sphinx>=7.0.0
 sphinx_rtd_theme
-sphinx-gallery
 jinja2<=3.1
 pandas
 configparser

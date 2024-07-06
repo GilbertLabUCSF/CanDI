@@ -14,13 +14,6 @@ Welcome to CanDI's documentation!
 .. image:: _static/imgs/Poster.png
    :width: 400
 
-.. nbgallery::
-   :caption: Notebooks:
-   get-started.ipynb
-   brca_heatmap.ipynb
-   kras_egfr_scatter.ipynb
-   deseq_setup.ipynb
-
 .. toctree::
    :maxdepth: 4
    :caption: Package:

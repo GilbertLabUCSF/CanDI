@@ -37,9 +37,7 @@ extensions = [
     'sphinx.ext.autodoc', 
     'sphinx.ext.todo',
     'sphinx.ext.viewcode', 
-    'sphinx_gallery.load_style',
     'myst_nb',
-    # 'myst_parser'
 ]
 
 # The suffix(es) of source filenames.

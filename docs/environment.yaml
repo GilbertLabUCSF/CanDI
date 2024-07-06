@@ -16,7 +16,6 @@ dependencies:
   - pip
   - pip:
     - myst-nb
-    - sphinx-gallery
     - sphinx_rtd_theme
     - pydeseq2
     - adpbulk
