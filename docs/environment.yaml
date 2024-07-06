@@ -16,7 +16,8 @@ dependencies:
   - tqdm
   - pip
   - pip:
-    - nbsphinx
+    - myst-nb
+    - sphinx-gallery
     - pydeseq2
     - adpbulk
     - pycandi
