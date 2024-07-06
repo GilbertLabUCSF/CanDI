@@ -47,7 +47,7 @@ extensions = [
 
 source_suffix = {
     '.rst': 'restructuredtext',
-    '.md': 'markdown',
+    '.md': 'myst-nb',
     '.ipynb': 'myst-nb',
 }
 
