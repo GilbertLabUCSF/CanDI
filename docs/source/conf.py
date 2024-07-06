@@ -37,7 +37,7 @@ extensions = [
     'sphinx.ext.viewcode', 
     'sphinx_gallery.load_style',
     'myst_nb',
-    'myst_parser'
+    # 'myst_parser'
 ]
 
 # The suffix(es) of source filenames.
@@ -47,7 +47,6 @@ source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
     '.ipynb': 'myst-nb',
-    '.myst': 'myst-nb',
 }
 
 # -- Options for parsing notebooks -------------------------------------------
