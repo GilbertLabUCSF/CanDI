@@ -14,7 +14,7 @@ setup(
     packages=find_packages(exclude=['tests', 'test_*']),
     
     long_description=long_description,
-    long_description_content_type='text/x-rst',
+    long_description_content_type='text/markdown',
 
     python_requires='>=3.11,<4.0',
     install_requires=[
