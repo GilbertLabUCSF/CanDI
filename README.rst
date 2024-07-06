@@ -79,13 +79,13 @@ Demos
 
    * - Name
      - Description
-   * - `Getting Started <docs/source/get-started.ipynb>`_
+   * - `Getting Started <notebooks/get-started.ipynb>`_
      - ...
-   * - `*BRCA* Heatmap <docs/source/brca_heatmap.ipynb>`_
+   * - `*BRCA* Heatmap <notebooks/brca_heatmap.ipynb>`_
      - ...
-   * - `*KRAS* and *EGFR* Scatter plot <docs/source/kras_egfr_scatter.ipynb>`_
+   * - `*KRAS* and *EGFR* Scatter plot <notebooks/kras_egfr_scatter.ipynb>`_
      - ...
-   * - `CanDI and DESeq2 <docs/source/deseq_setup.ipynb>`_
+   * - `CanDI and DESeq2 <notebooks/deseq_setup.ipynb>`_
      - ...
 
 
