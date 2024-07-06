@@ -7,6 +7,8 @@ CanDI/setup/data/coessentiality
 tests.py
 build
 
+docs/output
+
 **/__pycache__/
 **/.ipynb_checkpoints/
 **.pyc

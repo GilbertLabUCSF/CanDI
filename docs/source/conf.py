@@ -15,6 +15,8 @@ import subprocess
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
+autodoc_mock_imports = ["CanDI"]
+
 # Install CanDI - download datasets
 subprocess.run('candi-install', shell=True)
 
@@ -35,14 +37,20 @@ extensions = [
     'sphinx.ext.autodoc', 
     'sphinx.ext.todo',
     'sphinx.ext.viewcode', 
-    'nbsphinx', 
-    'myst_parser'
+    'myst_nb',
 ]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 
-source_suffix = ['.rst', '.md', '.ipynb']
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'myst-nb',
+    '.ipynb': 'myst-nb',
+}
+
+# -- Options for parsing notebooks -------------------------------------------
+nb_execution_mode = "off"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
