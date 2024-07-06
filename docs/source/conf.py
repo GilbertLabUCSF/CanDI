@@ -15,6 +15,8 @@ import subprocess
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
+autodoc_mock_imports = ["CanDI"]
+
 # Install CanDI - download datasets
 subprocess.run('candi-install', shell=True)
 
