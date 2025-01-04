@@ -35,9 +35,9 @@ class Manager(object):
 
         if cfig_path == 'auto':
             if not os.path.exists(manager_path + "/data/config.ini"):
-                cfig_path = manager_path + "/data/config.draft.ini"
-            else:
-                cfig_path = manager_path + "/data/config.ini"
+                # copy config.draft.ini to config.ini
+                os.system(f"cp {manager_path}/data/config.draft.ini {manager_path}/data/config.ini")
+            cfig_path = manager_path + "/data/config.ini"
 
         if verbose:
             print(f"Manager Path: {manager_path}")
