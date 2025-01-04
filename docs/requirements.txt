@@ -1,5 +1,5 @@
 readthedocs-sphinx-search
-myst-parser=0.18.1
+myst-parser==0.18.1
 myst-nb
 sphinx>=7.0.0
 sphinx_rtd_theme
