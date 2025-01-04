@@ -15,7 +15,7 @@ download stable datasets from
 
 ``` bash
 # Package Installation & Prepare Datasets
-pip install PyCanDI && candi-install --source dataverse
+pip install PyCanDI && candi-install
 ```
 
 Downloaded and formatted datasets would organize this way:
