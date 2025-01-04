@@ -39,6 +39,12 @@ class Manager(object):
                 os.system(f"cp {manager_path}/data/config.draft.ini {manager_path}/data/config.ini")
             cfig_path = manager_path + "/data/config.ini"
 
+        elif type(cfig_path) == str and os.path.exists(cfig_path):
+            cfig_path = cfig_path
+        
+        elif type(cfig_path) == str and not os.path.exists(cfig_path):
+            raise FileNotFoundError(f"Config file not found at {cfig_path}")
+
         if verbose:
             print(f"Manager Path: {manager_path}")
             print(f"Config Path: {cfig_path}")
