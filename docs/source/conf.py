@@ -23,7 +23,7 @@ subprocess.run('candi-install', shell=True)
 # -- Project information -----------------------------------------------------
 
 project = 'CanDI'
-copyright = '2021-2024 – Gilbert Lab, Arc Institute / UCSF'
+copyright = '2021-2025 – Gilbert Lab, Arc Institute / UCSF'
 author = 'Chris Yogodzinski, Abolfazl Arab'
 
 
